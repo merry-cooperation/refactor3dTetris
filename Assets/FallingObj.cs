@@ -16,6 +16,7 @@ public class FallingObj : MonoBehaviour
 
     private void HandleMoveX(bool right)
     {
+        Vector3 oldPos = transform.position;
         if (right)
         {
             transform.Translate(1, 0, 0);
@@ -24,10 +25,15 @@ public class FallingObj : MonoBehaviour
         {
             transform.Translate(-1, 0, 0);
         }
+        if (!GameManager.instance.PositionValid(transform.position))
+        {
+            transform.position = oldPos;
+        }
     }
 
     private void HandleMoveZ(bool up)
     {
+        Vector3 oldPos = transform.position;
         if (up)
         {
             transform.Translate(0, 0, 1);
@@ -36,18 +42,19 @@ public class FallingObj : MonoBehaviour
         {
             transform.Translate(0, 0, -1);
         }
+        if (!GameManager.instance.PositionValid(transform.position))
+        {
+            transform.position = oldPos;
+        }
     }
 
     void HandleGameTick()
     {
-        if (transform.position.y >= 1)
+        Vector3 oldPos = transform.position;
+        transform.Translate(0, -1, 0);
+        if (!GameManager.instance.PositionValid(transform.position))
         {
-            transform.Translate(0, -1, 0);
-
-        }
-        else
-        {
-
+            transform.position = oldPos;
             if (StopFallEvent != null)
             {
                 StopFallEvent(transform.position);
@@ -58,6 +65,5 @@ public class FallingObj : MonoBehaviour
             GameManager.instance.GameTickEvent -= HandleGameTick;
             Destroy(this);
         }
-
     }
 }

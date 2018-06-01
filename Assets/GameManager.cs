@@ -42,16 +42,20 @@ public class GameManager : MonoBehaviour
         glass = new Cell[SIZEX, SIZEY, SIZEZ];
         progress = 0.0f;
 
-
         FallingObj.StopFallEvent += new FallingObj.StopFallHandler(StopFallHandler);
     }
 
-    public bool MovePossible(Vector3 pos)
+    public bool PositionValid(Vector3 pos)
     {
         int x = (int)pos.x;
         int y = (int)pos.y;
         int z = (int)pos.z;
-
+        if (x >= 0 && x < SIZEX && y >= 0 && y < SIZEY && z >= 0 && z < SIZEZ &&
+            glass[x, y, z] == Cell.Space)
+        {
+            return true;
+        }
+        return false;
     }
 
     void StopFallHandler(Vector3 pos)
@@ -59,6 +63,7 @@ public class GameManager : MonoBehaviour
         Instantiate(cubePrefab, new Vector3(2, 9, 2), Quaternion.identity);
         glass[(int)pos.x, (int)pos.y, (int)pos.z] = Cell.Piece;
     }
+
     // Update is called once per frame
     void Update()
     {
