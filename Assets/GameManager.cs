@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     public event MoveZHandler MoveZEvent;
 
     public GameObject cubePrefab;
+    public GameObject l_shaped;
+    public GameObject t_shaped;
 
     public float period;
     private float progress;
