@@ -59,7 +59,9 @@ public class FallingObj : MonoBehaviour
             {
                 StopFallEvent(transform.position);
             }
-
+            MeshRenderer mr = GetComponent<MeshRenderer>();
+            mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            mr.receiveShadows = true;
             GameManager.instance.MoveXEvent -= HandleMoveX;
             GameManager.instance.MoveZEvent -= HandleMoveZ;
             GameManager.instance.GameTickEvent -= HandleGameTick;
