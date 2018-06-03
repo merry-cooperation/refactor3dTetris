@@ -64,10 +64,13 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    void HandleStopFall(Vector3 pos)
+    void HandleStopFall(Transform[] transforms)
     {
+        foreach (Transform t in transforms)
+        {
+            glass[(int)t.position.x, (int)t.position.y, (int)t.position.z] = Cell.Piece;
+        }
         Instantiate(cubePrefab, new Vector3(2, 9, 2), Quaternion.identity);
-        glass[(int)pos.x, (int)pos.y, (int)pos.z] = Cell.Piece;
     }
 
     // Update is called once per frame

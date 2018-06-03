@@ -55,7 +55,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4884602041783372}
-  m_Layer: 0
+  m_Layer: 21
   m_Name: L-shaped
   m_TagString: Untagged
   m_Icon: {fileID: 0}
