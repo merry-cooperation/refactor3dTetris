@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     public GameObject cubePrefab;
     public GameObject l_shaped;
     public GameObject t_shaped;
+    public GameObject straight;
+    public GameObject Big_cube;
 
     public float period;
     private float progress;
