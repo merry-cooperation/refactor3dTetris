@@ -7,11 +7,10 @@ public class GameManager : MonoBehaviour
     public static GameManager instance = null;
 
     public delegate void GameTickHandler();
-    public event GameTickHandler GameTickEvent;
-    public delegate void MoveXHandler(bool right);
-    public event MoveXHandler MoveXEvent;
-    public delegate void MoveZHandler(bool up);
-    public event MoveZHandler MoveZEvent;
+    public static event GameTickHandler GameTickEvent;
+
+    public delegate void MoveEventHandler(Vector3 translation);
+    public static event MoveEventHandler MoveEvent;
 
     public GameObject cubePrefab;
     public GameObject l_shaped;
@@ -46,9 +45,12 @@ public class GameManager : MonoBehaviour
         glass = new Cell[SIZEX, SIZEY, SIZEZ];
         progress = 0.0f;
 
-        FallingObj.StopFallEvent += new FallingObj.StopFallHandler(StopFallHandler);
+        FallingObj.StopFallEvent += new FallingObj.StopFallHandler(HandleStopFall);
     }
-
+    private void OnDestroy()
+    {
+        FallingObj.StopFallEvent -= HandleStopFall;
+    }
     public bool PositionValid(Vector3 pos)
     {
         int x = (int)pos.x;
@@ -62,7 +64,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    void StopFallHandler(Vector3 pos)
+    void HandleStopFall(Vector3 pos)
     {
         Instantiate(cubePrefab, new Vector3(2, 9, 2), Quaternion.identity);
         glass[(int)pos.x, (int)pos.y, (int)pos.z] = Cell.Piece;
@@ -78,44 +80,40 @@ public class GameManager : MonoBehaviour
             {
                 GameTickEvent();
             }
-
         }
         else
         {
             progress += Time.deltaTime;
         }
 
+        Vector3 translation = GetInput();
+        if (MoveEvent != null)
+        {
+            MoveEvent(translation);
+        }
+    }
+
+    private Vector3 GetInput()
+    {
+        Vector3 translation = Vector3.zero;
         if (Input.GetKeyDown(KeyCode.W))
         {
-            if (MoveZEvent != null)
-            {
-                MoveZEvent(true);
-            }
+            translation.z = 1;
 
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            if (MoveZEvent != null)
-            {
-                MoveZEvent(false);
-            }
+            translation.z = -1;
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            if (MoveZEvent != null)
-            {
-
-                MoveXEvent(true);
-            }
+            translation.x = 1;
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            if (MoveZEvent != null)
-            {
-                MoveXEvent(false);
-            }
+            translation.x = -1;
         }
+        return translation;
     }
-
 }
