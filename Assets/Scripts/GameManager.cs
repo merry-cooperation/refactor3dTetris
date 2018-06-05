@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public GameObject t_shaped;
     public GameObject straight;
     public GameObject Big_cube;
+    public GameObject z_shaped;
 
     public float period;
     private float progress;
@@ -70,7 +71,47 @@ public class GameManager : MonoBehaviour
         {
             glass[(int)t.position.x, (int)t.position.y, (int)t.position.z] = Cell.Piece;
         }
-        Instantiate(cubePrefab, new Vector3(2, 9, 2), Quaternion.identity);
+        int val;
+        int x, z;
+        val = Random.Range(0, 5);
+        switch (val)
+        {
+            case 0:
+                {
+                    x = Random.Range(0, 4);
+                    z = Random.Range(0, 4);
+                    Instantiate(Big_cube, new Vector3(x, 9, z), Quaternion.identity);
+                    break;
+                }
+            case 1:
+                {
+                    x = Random.Range(0, 3);
+                    z = Random.Range(0, 5);
+                    Instantiate(t_shaped, new Vector3(x, 9, z), Quaternion.identity);
+                    break;
+                }
+            case 2:
+                {
+                    x = Random.Range(0, 3);
+                    z = Random.Range(0, 5);
+                    Instantiate(l_shaped, new Vector3(x, 9, z), Quaternion.identity);
+                    break;
+                }
+            case 3:
+                {
+                    x = Random.Range(0, 2);
+                    z = Random.Range(0, 5);
+                    Instantiate(straight, new Vector3(x, 9, z), Quaternion.identity);
+                    break;
+                }
+            case 4:
+                {
+                    x = Random.Range(0, 3);
+                    z = Random.Range(0, 5);
+                    Instantiate(z_shaped, new Vector3(x, 9, z), Quaternion.identity);
+                    break;
+                }
+        }
     }
 
     // Update is called once per frame
