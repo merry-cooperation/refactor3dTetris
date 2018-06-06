@@ -7,11 +7,15 @@ public class FallingObj : MonoBehaviour
     public delegate void StopFallHandler(Transform[] transforms);
     public static event StopFallHandler StopFallEvent;
 
+    public Material inactiveMaterial;
+
     private Transform[] childTransform;
     private GameObject[] childGameObj;
 
     private List<MeshRenderer> recolored;
-    private Color basic;
+
+    private static Color basic = new Color(0.196f, 0.55f, 1f, 1f);
+    private static Color highlight = new Color(1f, 0.235f, 0.235f, 1f);
     private int layermask;
     private void Awake()
     {
@@ -24,13 +28,12 @@ public class FallingObj : MonoBehaviour
             childGameObj[i] = childTransform[i].gameObject;
         }
 
-        basic = childGameObj[0].GetComponent<MeshRenderer>().material.color;
         recolored = new List<MeshRenderer>();
 
         // tetrominoes
         layermask = 1 << 21;
         //glass
-        layermask |= 1 << 20;
+        //layermask |= 1 << 20;
 
         GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
@@ -43,7 +46,7 @@ public class FallingObj : MonoBehaviour
 
     private void Update()
     {
-        DebugRaycast();
+        //DebugRaycast();
     }
 
     private void HandleMove(Vector3 translation)
@@ -58,7 +61,7 @@ public class FallingObj : MonoBehaviour
                 return;
             }
         }
-        // DoRaycast();
+        RaycastRecolor();
     }
 
     void HandleGameTick()
@@ -78,7 +81,7 @@ public class FallingObj : MonoBehaviour
         if (posValid)
         {
 
-            // DoRaycast();
+            RaycastRecolor();
         }
         else
         {
@@ -86,16 +89,16 @@ public class FallingObj : MonoBehaviour
 
             foreach (var child in childGameObj)
             {
-                //MeshRenderer mr = child.GetComponent<MeshRenderer>();
-                //mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                //mr.material.color = new Color(1f, 0f, 0f, 0.3f);
-                //mr.receiveShadows = true;
+                MeshRenderer mr = child.GetComponent<MeshRenderer>();
+                mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                mr.material = inactiveMaterial;
+                mr.receiveShadows = true;
             }
 
-            foreach (var cubeMesh in recolored)
-            {
-                cubeMesh.material.color = basic;
-            }
+            //foreach (var cubeMesh in recolored)
+            //{
+            //    cubeMesh.material.color = basic;
+            //}
 
             if (StopFallEvent != null)
             {
@@ -106,11 +109,16 @@ public class FallingObj : MonoBehaviour
 
     }
 
-    private void DoRaycast()
+    private void RaycastRecolor()
     {
+        foreach (var cubeRenderer in recolored)
+        {
+            cubeRenderer.material.color = basic;
+        }
+        recolored.Clear();
         foreach (Transform t in childTransform)
         {
-            Ray ray = new Ray(t.position, t.TransformDirection(Vector3.forward));
+            Ray ray = new Ray(t.position, Vector3.down);
 
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, layermask))
@@ -118,7 +126,7 @@ public class FallingObj : MonoBehaviour
                 ///Debug.Log("hit");
                 MeshRenderer mr = hit.transform.gameObject.GetComponent<MeshRenderer>();
                 recolored.Add(mr);
-                mr.material.color = new Color(1f, 1f, 1f, 0.1f);
+                mr.material.color = highlight;
                 //Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
                 //Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * hit.distance, Color.yellow);
             }
