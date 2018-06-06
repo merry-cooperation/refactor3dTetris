@@ -43,25 +43,7 @@ public class FallingObj : MonoBehaviour
 
     private void Update()
     {
-        foreach (Transform t in childTransform)
-        {
-            Ray ray = new Ray(t.position, t.TransformDirection(Vector3.forward));
-
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layermask))
-            {
-                Debug.Log("hit");
-                Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-                Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * hit.distance, Color.yellow);
-            }
-            else
-            {
-                Debug.Log("not hit");
-                Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * 1000, Color.black);
-                Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * 1000, Color.gray);
-            }
-        }
-
+        DebugRaycast();
     }
 
     private void HandleMove(Vector3 translation)
@@ -73,10 +55,10 @@ public class FallingObj : MonoBehaviour
             if (!GameManager.instance.PositionValid(piecePart.position))
             {
                 transform.position = oldPos;
-                break;
+                return;
             }
         }
-
+        // DoRaycast();
     }
 
     void HandleGameTick()
@@ -88,56 +70,125 @@ public class FallingObj : MonoBehaviour
         {
             if (!GameManager.instance.PositionValid(piecePart.position))
             {
-                transform.position = oldPos;
 
-                foreach (var child in childGameObj)
-                {
-                    MeshRenderer mr = child.GetComponent<MeshRenderer>();
-                    mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                    mr.receiveShadows = true;
-                }
-
-                foreach (var cube in recolored)
-                {
-                    cube.material.color = basic;
-                }
-
-                if (StopFallEvent != null)
-                {
-                    StopFallEvent(childTransform);
-                }
                 posValid = false;
                 break;
             }
         }
         if (posValid)
         {
-            
-            foreach (Transform t in childTransform)
-            {
-                Ray ray = new Ray(t.position, t.TransformDirection(Vector3.forward));
 
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit, Mathf.Infinity, layermask))
-                {
-                    ///Debug.Log("hit");
-                    MeshRenderer mr = hit.transform.gameObject.GetComponent<MeshRenderer>();
-                    recolored.Add(mr);
-                    mr.material.color = new Color(1f, 1f, 1f, 0.1f);
-                    //Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-                    //Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * hit.distance, Color.yellow);
-                }
-                else
-                {
-                    //Debug.Log("not hit");
-                    //Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * 1000, Color.black);
-                    //Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * 1000, Color.gray);
-                }
-            }
+            // DoRaycast();
         }
         else
         {
+            transform.position = oldPos;
+
+            foreach (var child in childGameObj)
+            {
+                //MeshRenderer mr = child.GetComponent<MeshRenderer>();
+                //mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                //mr.material.color = new Color(1f, 0f, 0f, 0.3f);
+                //mr.receiveShadows = true;
+            }
+
+            foreach (var cubeMesh in recolored)
+            {
+                cubeMesh.material.color = basic;
+            }
+
+            if (StopFallEvent != null)
+            {
+                StopFallEvent(childTransform);
+            }
             Destroy(this);
+        }
+
+    }
+
+    private void DoRaycast()
+    {
+        foreach (Transform t in childTransform)
+        {
+            Ray ray = new Ray(t.position, t.TransformDirection(Vector3.forward));
+
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layermask))
+            {
+                ///Debug.Log("hit");
+                MeshRenderer mr = hit.transform.gameObject.GetComponent<MeshRenderer>();
+                recolored.Add(mr);
+                mr.material.color = new Color(1f, 1f, 1f, 0.1f);
+                //Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                //Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * hit.distance, Color.yellow);
+            }
+            else
+            {
+                //Debug.Log("not hit");
+                //Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * 1000, Color.black);
+                //Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * 1000, Color.gray);
+            }
+        }
+    }
+
+    private void DebugRaycast()
+    {
+        //foreach (Transform t in childTransform)
+        //{
+
+        //    RaycastHit hit;
+        //    if (Physics.Raycast(t.position, t.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layermask))
+        //    {
+        //        Debug.Log("forward hit" + hit.collider.tag);
+        //        Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * hit.distance, Color.blue);
+
+        //    }
+
+        //    if (Physics.Raycast(t.position, t.TransformDirection(Vector3.right), out hit, Mathf.Infinity, layermask))
+        //    {
+        //        Debug.Log("right hit" + hit.collider.tag);
+        //        Debug.DrawRay(t.position, t.TransformDirection(Vector3.right) * hit.distance, Color.yellow);
+        //    }
+
+        //    if (Physics.Raycast(t.position, t.TransformDirection(Vector3.left), out hit, Mathf.Infinity, layermask))
+        //    {
+        //        Debug.Log("left hit" + hit.collider.tag);
+        //        Debug.DrawRay(t.position, t.TransformDirection(Vector3.left) * hit.distance, Color.cyan);
+        //    }
+
+        //    if (Physics.Raycast(t.position, t.TransformDirection(Vector3.back), out hit, Mathf.Infinity, layermask))
+        //    {
+        //        Debug.Log("back hit" + hit.collider.tag);
+        //        Debug.DrawRay(t.position, t.TransformDirection(Vector3.back) * hit.distance, Color.green);
+        //    }
+        //}
+
+
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layermask))
+        {
+            Debug.Log("forward hit" + hit.collider.tag);
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.blue);
+
+        }
+
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out hit, Mathf.Infinity, layermask))
+        {
+            Debug.Log("right hit" + hit.collider.tag);
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right) * hit.distance, Color.yellow);
+        }
+
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.left), out hit, Mathf.Infinity, layermask))
+        {
+            Debug.Log("left hit" + hit.collider.tag);
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.left) * hit.distance, Color.cyan);
+        }
+
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.back), out hit, Mathf.Infinity, layermask))
+        {
+            Debug.Log("back hit" + hit.collider.tag);
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.back) * hit.distance, Color.green);
         }
 
     }
