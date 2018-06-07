@@ -32,8 +32,8 @@ public class ActiveTetrominoControl : MonoBehaviour
 
         // tetrominoes
         layermask = 1 << 21;
-        //glass
-        //layermask |= 1 << 20;
+        // well
+        layermask |= 1 << 20;
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
     }
