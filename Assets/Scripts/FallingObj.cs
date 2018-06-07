@@ -59,6 +59,7 @@ public class FallingObj : MonoBehaviour
                     MeshRenderer mr = child.GetComponent<MeshRenderer>();
                     mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                     mr.receiveShadows = true;
+                    //child.AddComponent<InactiveCube>();
                 }
 
                 if (StopFallEvent != null)
