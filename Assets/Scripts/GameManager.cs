@@ -9,9 +9,8 @@ public class GameManager : MonoBehaviour
     public delegate void GameTickHandler(); //ссылка на функцию
     public static event GameTickHandler GameTickEvent;
 
-    public delegate void LayerClearHandler();
+    public delegate void LayerClearHandler(int y);
     public static event LayerClearHandler LayerClearEvent;
-
 
     public delegate void MoveEventHandler(Vector3 translation);
     public static event MoveEventHandler MoveEvent;
@@ -26,17 +25,14 @@ public class GameManager : MonoBehaviour
     public float period;
     private float progress;
 
-    public enum Piece { Cube };
+    public enum Tetromino { Cube };
 
-    private enum Cell { Space, Piece };
-    private Cell[,,] glass;
+
     private const int SIZEX = 5;
     private const int SIZEY = 10;
     private const int SIZEZ = 5;
 
     private GameObject[,,] well;
-
-
 
     private void Awake()
     {
@@ -52,15 +48,14 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        glass = new Cell[SIZEX, SIZEY, SIZEZ];
         well = new GameObject[SIZEX, SIZEY, SIZEZ];
         progress = 0.0f;
 
-        FallingObj.StopFallEvent += new FallingObj.StopFallHandler(HandleStopFall);
+        ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
     }
     private void OnDestroy()
     {
-        FallingObj.StopFallEvent -= HandleStopFall;
+        ActiveTetrominoControl.StopFallEvent -= HandleStopFall;
     }
     public bool PositionValid(Vector3 pos)
     {
@@ -102,14 +97,14 @@ public class GameManager : MonoBehaviour
             }
             if (!free)
             {
-                clear_sloi(y);
+                ClearLayer(y);
             }
         }
-        //  figa();
+        // SpawnRandomTetromino()
         Instantiate(cubePrefab, new Vector3(2, 9, 2), Quaternion.identity);
     }
 
-    private void clear_sloi(int y)
+    private void ClearLayer(int y)
     {
         for (int x = 0; x < SIZEX; x++)
         {
@@ -120,10 +115,13 @@ public class GameManager : MonoBehaviour
 
             }
         }
+        if (LayerClearEvent != null)
+        {
+            LayerClearEvent(y);
+        }
     }
 
-
-    private void figa()
+    private void SpawnRandomTetromino()
     {
         int val;
         int x, z;
