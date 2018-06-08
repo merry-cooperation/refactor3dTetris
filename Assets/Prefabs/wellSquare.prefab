@@ -21,8 +21,8 @@ GameObject:
   - component: {fileID: 4020221215360454}
   - component: {fileID: 33453343759207688}
   - component: {fileID: 23449910617923606}
-  - component: {fileID: 114403498819333316}
   - component: {fileID: 64641657461942084}
+  - component: {fileID: 114860367704561818}
   m_Layer: 0
   m_Name: wellSquare
   m_TagString: Untagged
@@ -98,7 +98,7 @@ MeshCollider:
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114403498819333316
+--- !u!114 &114860367704561818
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

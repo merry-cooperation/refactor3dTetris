@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33924892428218810}
   - component: {fileID: 23958754445191188}
   - component: {fileID: 65987568859871238}
+  - component: {fileID: 114111239245207238}
   m_Layer: 21
   m_Name: Cube
   m_TagString: Tetromino
@@ -52,7 +53,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1826735340807086}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 9, z: 0}
+  m_LocalPosition: {x: 1, y: 9, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4830792011109970}
@@ -125,6 +126,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114111239245207238
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1286301595384324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3784ac7a00ba34e46a0c695c424f726a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlight: {r: 0.0882353, g: 0.86764705, b: 0, a: 0.603}
 --- !u!114 &114974422867347274
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public GameObject straight;
     public GameObject Big_cube;
     public GameObject z_shaped;
+    public GameObject fixedCube;
 
     public float period;
     private float progress;
@@ -28,9 +29,9 @@ public class GameManager : MonoBehaviour
     public enum Tetromino { Cube };
 
 
-    private const int SIZEX = 5;
+    private const int SIZEX = 2;
     private const int SIZEY = 10;
-    private const int SIZEZ = 5;
+    private const int SIZEZ = 2;
 
     private GameObject[,,] well;
 
@@ -73,43 +74,44 @@ public class GameManager : MonoBehaviour
     void HandleStopFall(Transform[] transforms)
     {
         foreach (Transform t in transforms)
-        {
-            well[(int)t.position.x, (int)t.position.y, (int)t.position.z] = t.gameObject;
+        {           
+            well[(int)t.position.x, (int)t.position.y, (int)t.position.z] = Instantiate(fixedCube, t.position, t.rotation);
         }
 
-        for (int y = SIZEY - 1; y >= 0; y--)
+        CheckLayers();
+
+        // SpawnRandomTetromino()
+        Instantiate(cubePrefab, new Vector3(1, 9, 1), Quaternion.identity);
+    }
+
+    private void CheckLayers()
+    {
+        for (int y = 0; y < SIZEY; y++)
         {
-            bool free = false;
-            for (int z = 0; z < SIZEZ; z++)
+            bool layerFilled = true;
+            for (int z = 0; z < SIZEZ && layerFilled; z++)
             {
-                for (int x = 0; x < SIZEX; x++)
+                for (int x = 0; x < SIZEX && layerFilled; x++)
                 {
                     if (well[x, y, z] == null)
                     {
-                        free = true;
-                        break;
+                        layerFilled = false;
                     }
                 }
-                if (free)
-                {
-                    break;
-                }
             }
-            if (!free)
+            if (layerFilled)
             {
                 ClearLayer(y);
             }
         }
-        // SpawnRandomTetromino()
-        Instantiate(cubePrefab, new Vector3(2, 9, 2), Quaternion.identity);
     }
-
     private void ClearLayer(int y)
     {
         for (int x = 0; x < SIZEX; x++)
         {
             for (int z = 0; z < SIZEZ; z++)
             {
+                well[x, y, z].SetActive(false);
                 Destroy(well[x, y, z]);
                 well[x, y, z] = null;
 

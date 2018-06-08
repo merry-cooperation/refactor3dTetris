@@ -28,8 +28,8 @@ TagManager:
   - 
   - 
   - well
-  - tetrominoes
-  - 
+  - activeTetromino
+  - inactiveWellCube
   - 
   - 
   - 

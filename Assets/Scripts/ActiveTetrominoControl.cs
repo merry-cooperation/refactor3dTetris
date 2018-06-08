@@ -16,7 +16,7 @@ public class ActiveTetrominoControl : MonoBehaviour
 
     private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left, Vector3.down };
 
-    private int layermask;
+    private static int layermask = 1 << 20 | 1 << 22;
     private void Awake()
     {
         int n = transform.childCount;
@@ -29,11 +29,7 @@ public class ActiveTetrominoControl : MonoBehaviour
         }
 
         recolored = new List<Highlighter>();
-
-        // tetrominoes
-        layermask = 1 << 21;
-        // well
-        layermask |= 1 << 20;
+        
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
     }
@@ -41,14 +37,15 @@ public class ActiveTetrominoControl : MonoBehaviour
     {
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
+        
     }
     private void HandleMove(Vector3 translation)
     {
         Vector3 oldPos = transform.position;
         transform.Translate(translation);
-        foreach (Transform piecePart in childTransform)
+        foreach (Transform tetrominoPart in childTransform)
         {
-            if (!GameManager.instance.PositionValid(piecePart.position))
+            if (!GameManager.instance.PositionValid(tetrominoPart.position))
             {
                 transform.position = oldPos;
                 return;
@@ -80,17 +77,24 @@ public class ActiveTetrominoControl : MonoBehaviour
         {
             transform.position = oldPos;
 
-            foreach (var child in childGameObj)
-            {
-                MeshRenderer mr = child.GetComponent<MeshRenderer>();
-                mr.material = inactiveMaterial;
-            }
+            //foreach (var child in childGameObj)
+            //{
+            //    MeshRenderer mr = child.GetComponent<MeshRenderer>();
+            //    mr.material = inactiveMaterial;
+            //}
 
+            foreach (var obj in recolored)
+            {
+                obj.SetBasicColor();
+            }
+            recolored.Clear();
             if (StopFallEvent != null)
             {
                 StopFallEvent(childTransform);
             }
-            Destroy(this);
+
+            
+            Destroy(gameObject);
         }
 
     }
