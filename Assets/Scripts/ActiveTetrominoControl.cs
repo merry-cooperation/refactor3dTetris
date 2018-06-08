@@ -31,6 +31,7 @@ public class ActiveTetrominoControl : MonoBehaviour
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
     }
+
     private void OnDestroy()
     {
         GameManager.GameTickEvent -= HandleGameTick;
@@ -43,10 +44,12 @@ public class ActiveTetrominoControl : MonoBehaviour
             }
         }
     }
-    private void HandleMove(Vector3 translation)
+
+    private void HandleMove(Vector3 translation, Quaternion rotation)
     {
         Vector3 oldPos = transform.position;
-        transform.Translate(translation);
+        transform.Translate(translation, Space.World);
+        transform.rotation *= rotation;
         foreach (Transform tetrominoPart in childTransform)
         {
             if (!GameManager.instance.PositionValid(tetrominoPart.position))
@@ -61,7 +64,7 @@ public class ActiveTetrominoControl : MonoBehaviour
     void HandleGameTick()
     {
         Vector3 oldPos = transform.position;
-        transform.Translate(0, -1, 0);
+        transform.Translate(0, -1, 0, Space.World);
 
         bool posValid = true;
         foreach (Transform piecePart in childTransform)

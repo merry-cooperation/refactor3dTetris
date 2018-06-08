@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public delegate void LayersClearedHandler(List<int> layers);
     public static event LayersClearedHandler LayersClearedEvent;
 
-    public delegate void MoveEventHandler(Vector3 translation);
+    public delegate void MoveEventHandler(Vector3 translation, Quaternion rotation);
     public static event MoveEventHandler MoveEvent;
 
     public GameObject cubePrefab;
@@ -81,8 +81,8 @@ public class GameManager : MonoBehaviour
 
         CheckLayers();
 
-        SpawnRandomTetromino();
-        //Instantiate(cubePrefab, new Vector3(1, 9, 1), Quaternion.identity);
+        //SpawnRandomTetromino();
+        Instantiate(cubePrefab, new Vector3(1, 9, 1), Quaternion.identity);
     }
 
     private void CheckLayers()
@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
         if (filledLayers.Count > 0)
         {
             ClearLayers(filledLayers);
-        }      
+        }
     }
     private void ClearLayers(List<int> filledLayers)
     {
@@ -213,16 +213,14 @@ public class GameManager : MonoBehaviour
             progress += Time.deltaTime;
         }
 
-        Vector3 translation = GetInput();
-        if (MoveEvent != null)
-        {
-            MoveEvent(translation);
-        }
+        GetInput();
+
     }
 
-    private Vector3 GetInput()
+    private void GetInput()
     {
         Vector3 translation = Vector3.zero;
+        Quaternion rotation = Quaternion.identity;
         if (Input.GetKeyDown(KeyCode.W))
         {
             translation.z = 1;
@@ -241,6 +239,15 @@ public class GameManager : MonoBehaviour
         {
             translation.x = -1;
         }
-        return translation;
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            rotation = Quaternion.AngleAxis(90.0f, Vector3.right);
+        }
+
+        if ((translation != Vector3.zero || rotation != Quaternion.identity) && MoveEvent != null)
+        {
+            MoveEvent(translation, rotation);
+        }
     }
 }
