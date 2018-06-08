@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour
     public delegate void GameTickHandler(); //ссылка на функцию
     public static event GameTickHandler GameTickEvent;
 
-    public delegate void LayerClearHandler(int y);
-    public static event LayerClearHandler LayerClearEvent;
+    public delegate void LayersClearedHandler(List<int> layers);
+    public static event LayersClearedHandler LayersClearedEvent;
 
     public delegate void MoveEventHandler(Vector3 translation);
     public static event MoveEventHandler MoveEvent;
@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
         progress = 0.0f;
 
         ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
+
     }
     private void OnDestroy()
     {
@@ -74,19 +75,21 @@ public class GameManager : MonoBehaviour
     void HandleStopFall(Transform[] transforms)
     {
         foreach (Transform t in transforms)
-        {           
+        {
             well[(int)t.position.x, (int)t.position.y, (int)t.position.z] = Instantiate(fixedCube, t.position, t.rotation);
         }
 
         CheckLayers();
 
-        // SpawnRandomTetromino()
+        //SpawnRandomTetromino();
         Instantiate(cubePrefab, new Vector3(1, 9, 1), Quaternion.identity);
     }
 
     private void CheckLayers()
     {
-        for (int y = 0; y < SIZEY; y++)
+        List<int> filledLayers = new List<int>();
+
+        for (int y = SIZEY - 1; y >= 0; y--)
         {
             bool layerFilled = true;
             for (int z = 0; z < SIZEZ && layerFilled; z++)
@@ -101,34 +104,61 @@ public class GameManager : MonoBehaviour
             }
             if (layerFilled)
             {
-                ClearLayer(y);
+                filledLayers.Add(y);
             }
         }
+        if (filledLayers.Count > 0)
+        {
+            ClearLayers(filledLayers);
+        }      
     }
-    private void ClearLayer(int y)
+    private void ClearLayers(List<int> filledLayers)
     {
-        for (int x = 0; x < SIZEX; x++)
+        foreach (int y in filledLayers)
         {
-            for (int z = 0; z < SIZEZ; z++)
+            for (int x = 0; x < SIZEX; x++)
             {
-                well[x, y, z].SetActive(false);
-                Destroy(well[x, y, z]);
-                well[x, y, z] = null;
+                for (int z = 0; z < SIZEZ; z++)
+                {
+                    well[x, y, z].SetActive(false);
+                    Destroy(well[x, y, z]);
+                    well[x, y, z] = null;
 
+                }
+            }
+
+            for (int layer = y; layer < SIZEY - 1; layer++)
+            {
+                for (int x = 0; x < SIZEX; x++)
+                {
+                    for (int z = 0; z < SIZEZ; z++)
+                    {
+                        well[x, layer, z] = well[x, layer + 1, z];
+                        if (well[x, layer, z] != null)
+                        {
+                            FixedCube cube = well[x, layer, z].GetComponent<FixedCube>();
+                            if (cube != null)
+                            {
+                                cube.FallDown();
+                            }
+                        }
+
+                    }
+                }
             }
         }
-        if (LayerClearEvent != null)
+        // slight pause
+        progress -= 0.5f;
+        if (LayersClearedEvent != null)
         {
-            LayerClearEvent(y);
+            LayersClearedEvent(filledLayers);
         }
     }
 
     private void SpawnRandomTetromino()
     {
-        int val;
         int x, z;
-        val = Random.Range(0, 5);
-        switch (val)
+        switch (Random.Range(0, 5))
         {
             case 0:
                 {

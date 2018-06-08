@@ -7,8 +7,6 @@ public class ActiveTetrominoControl : MonoBehaviour
     public delegate void StopFallHandler(Transform[] transforms);
     public static event StopFallHandler StopFallEvent;
 
-    public Material inactiveMaterial;
-
     private Transform[] childTransform;
     private GameObject[] childGameObj;
 
@@ -29,7 +27,7 @@ public class ActiveTetrominoControl : MonoBehaviour
         }
 
         recolored = new List<Highlighter>();
-        
+
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
     }
@@ -37,7 +35,13 @@ public class ActiveTetrominoControl : MonoBehaviour
     {
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
-        
+        foreach (var obj in recolored)
+        {
+            if (obj != null)
+            {
+                obj.SetBasicColor();
+            }
+        }
     }
     private void HandleMove(Vector3 translation)
     {
@@ -93,7 +97,7 @@ public class ActiveTetrominoControl : MonoBehaviour
                 StopFallEvent(childTransform);
             }
 
-            
+
             Destroy(gameObject);
         }
 
@@ -109,7 +113,7 @@ public class ActiveTetrominoControl : MonoBehaviour
 
         foreach (Transform t in childTransform)
         {
-            foreach(var dir in directions)
+            foreach (var dir in directions)
             {
                 RaycastHit hit;
                 if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layermask))
