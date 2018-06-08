@@ -29,9 +29,9 @@ public class GameManager : MonoBehaviour
     public enum Tetromino { Cube };
 
 
-    private const int SIZEX = 2;
+    private const int SIZEX = 5;
     private const int SIZEY = 10;
-    private const int SIZEZ = 2;
+    private const int SIZEZ = 5;
 
     private GameObject[,,] well;
 
@@ -81,8 +81,8 @@ public class GameManager : MonoBehaviour
 
         CheckLayers();
 
-        //SpawnRandomTetromino();
-        Instantiate(cubePrefab, new Vector3(1, 9, 1), Quaternion.identity);
+        SpawnRandomTetromino();
+        //Instantiate(cubePrefab, new Vector3(1, 9, 1), Quaternion.identity);
     }
 
     private void CheckLayers()
