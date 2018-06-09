@@ -6,6 +6,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance = null;
 
+    public delegate void GameLostHandler();
+    public static event GameLostHandler GameLostEvent;
+
     public delegate void GameTickHandler(); //ссылка на функцию
     public static event GameTickHandler GameTickEvent;
 
@@ -26,11 +29,12 @@ public class GameManager : MonoBehaviour
     public float period;
     private float progress;
 
-    public enum Tetromino { Cube };
-
+    private enum State { Play, Pause, Lost };
+    private State state;
 
     private const int SIZEX = 5;
     private const int SIZEY = 10;
+    private const int FULLY = 14;
     private const int SIZEZ = 5;
 
     private GameObject[,,] well;
@@ -45,26 +49,37 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        state = State.Play;
     }
     // Use this for initialization
     void Start()
     {
-        well = new GameObject[SIZEX, SIZEY, SIZEZ];
+        well = new GameObject[SIZEX, FULLY, SIZEZ];
         progress = 0.0f;
 
         ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
+        GameLostEvent += new GameLostHandler(HandleGameLost);
 
     }
+
     private void OnDestroy()
     {
         ActiveTetrominoControl.StopFallEvent -= HandleStopFall;
+        GameLostEvent -= HandleGameLost;
     }
+
+    private void HandleGameLost()
+    {
+        Debug.Log("Game Lost");
+        state = State.Play;
+    }
+
     public bool PositionValid(Vector3 pos)
     {
         int x = (int)pos.x;
         int y = (int)pos.y;
         int z = (int)pos.z;
-        if (x >= 0 && x < SIZEX && y >= 0 && y < SIZEY && z >= 0 && z < SIZEZ &&
+        if (x >= 0 && x < SIZEX && y >= 0 && y < FULLY && z >= 0 && z < SIZEZ &&
             well[x, y, z] == null)
         {
             return true;
@@ -72,17 +87,28 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    void HandleStopFall(Transform[] transforms)
+    private void HandleStopFall(Transform[] transforms)
     {
         foreach (Transform t in transforms)
         {
-            well[(int)t.position.x, (int)t.position.y, (int)t.position.z] = Instantiate(fixedCube, t.position, t.rotation);
+            int x = (int)t.position.x;
+            int y = (int)t.position.y;
+            int z = (int)t.position.z;
+            if (y >= SIZEY)
+            {
+                if (GameLostEvent != null)
+                {
+                    GameLostEvent();
+                }
+                return;
+            }
+            well[x, y, z] = Instantiate(fixedCube, t.position, t.rotation);
         }
 
         CheckLayers();
 
         //SpawnRandomTetromino();
-        Instantiate(cubePrefab, new Vector3(1, 9, 1), Quaternion.identity);
+        Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
     }
 
     private void CheckLayers()
@@ -164,35 +190,35 @@ public class GameManager : MonoBehaviour
                 {
                     x = Random.Range(0, 4);
                     z = Random.Range(0, 4);
-                    Instantiate(Big_cube, new Vector3(x, 9, z), Quaternion.identity);
+                    Instantiate(Big_cube, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 1:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 5);
-                    Instantiate(t_shaped, new Vector3(x, 9, z), Quaternion.identity);
+                    Instantiate(t_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 2:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 5);
-                    Instantiate(l_shaped, new Vector3(x, 9, z), Quaternion.identity);
+                    Instantiate(l_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 3:
                 {
                     x = Random.Range(0, 2);
                     z = Random.Range(0, 5);
-                    Instantiate(straight, new Vector3(x, 9, z), Quaternion.identity);
+                    Instantiate(straight, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 4:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 5);
-                    Instantiate(z_shaped, new Vector3(x, 9, z), Quaternion.identity);
+                    Instantiate(z_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
         }
@@ -203,7 +229,8 @@ public class GameManager : MonoBehaviour
         if (progress >= period)
         {
             progress -= period;
-            if (GameTickEvent != null)
+
+            if (state == State.Play && GameTickEvent != null)
             {
                 GameTickEvent();
             }
@@ -213,8 +240,10 @@ public class GameManager : MonoBehaviour
             progress += Time.deltaTime;
         }
 
-        GetInput();
-
+        if (state == State.Play)
+        {
+            GetInput();
+        }
     }
 
     private void GetInput()

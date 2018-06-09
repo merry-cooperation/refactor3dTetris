@@ -1996,7 +1996,7 @@ MonoBehaviour:
   Big_cube: {fileID: 1003478990291420, guid: d71aee7cc7d58e742bdc698046bc2186, type: 2}
   z_shaped: {fileID: 1679461194840232, guid: a4e9d83a1984182429da0fb2ac1ffeff, type: 2}
   fixedCube: {fileID: 1741514472401224, guid: 0e224362889e34e47944486b070000c3, type: 2}
-  period: 0.7
+  period: 0.3
 --- !u!1001 &408235717
 Prefab:
   m_ObjectHideFlags: 0
