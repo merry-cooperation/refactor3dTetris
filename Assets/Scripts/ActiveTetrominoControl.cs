@@ -45,16 +45,20 @@ public class ActiveTetrominoControl : MonoBehaviour
         }
     }
 
-    private void HandleMove(Vector3 translation, Quaternion rotation)
+    private void HandleMove(Vector3 translation, Vector3 rotation)
     {
         Vector3 oldPos = transform.position;
+        Quaternion oldRot = transform.rotation;
+
         transform.Translate(translation, Space.World);
-        transform.rotation *= rotation;
+        transform.Rotate(rotation, Space.World);
+
         foreach (Transform tetrominoPart in childTransform)
         {
             if (!GameManager.instance.PositionValid(tetrominoPart.position))
             {
                 transform.position = oldPos;
+                transform.rotation = oldRot;
                 return;
             }
         }

@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public delegate void LayersClearedHandler(List<int> layers);
     public static event LayersClearedHandler LayersClearedEvent;
 
-    public delegate void MoveEventHandler(Vector3 translation, Quaternion rotation);
+    public delegate void MoveEventHandler(Vector3 translation, Vector3 rotation);
     public static event MoveEventHandler MoveEvent;
 
     public GameObject cubePrefab;
@@ -249,32 +249,40 @@ public class GameManager : MonoBehaviour
     private void GetInput()
     {
         Vector3 translation = Vector3.zero;
-        Quaternion rotation = Quaternion.identity;
-        if (Input.GetKeyDown(KeyCode.W))
+        Vector3 rotation = Vector3.zero;
+        if (Input.GetKeyDown(KeyCode.S))
         {
             translation.z = 1;
 
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (Input.GetKeyDown(KeyCode.W))
         {
             translation.z = -1;
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.A))
         {
             translation.x = 1;
         }
-        else if (Input.GetKeyDown(KeyCode.A))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
             translation.x = -1;
         }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            rotation = Quaternion.AngleAxis(90.0f, Vector3.right);
+            rotation.x = 90;
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            rotation.y = 90;
+        }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            rotation.z = 90;
         }
 
-        if ((translation != Vector3.zero || rotation != Quaternion.identity) && MoveEvent != null)
+        if ((translation != Vector3.zero || rotation != Vector3.zero) && MoveEvent != null)
         {
             MoveEvent(translation, rotation);
         }
