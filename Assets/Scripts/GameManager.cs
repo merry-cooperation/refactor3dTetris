@@ -91,9 +91,11 @@ public class GameManager : MonoBehaviour
     {
         foreach (Transform t in transforms)
         {
-            int x = (int)t.position.x;
-            int y = (int)t.position.y;
-            int z = (int)t.position.z;
+
+            int x = Mathf.RoundToInt(t.position.x);
+            int y = Mathf.RoundToInt(t.position.y);
+            int z = Mathf.RoundToInt(t.position.z);
+
             if (y >= SIZEY)
             {
                 if (GameLostEvent != null)
@@ -102,13 +104,15 @@ public class GameManager : MonoBehaviour
                 }
                 return;
             }
-            well[x, y, z] = Instantiate(fixedCube, t.position, t.rotation);
+            Debug.Log("HandleStopFall: x = " + t.position.x + " y = " + t.position.y + " z = " + t.position.z);
+            Debug.Log("HandleStopFall: cube at x = " + x + " y = " + y + " z = " + z);
+            well[x, y, z] = Instantiate(fixedCube, t.position, Quaternion.identity);
         }
 
         CheckLayers();
 
-        //SpawnRandomTetromino();
-        Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
+        SpawnRandomTetromino();
+        //Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
     }
 
     private void CheckLayers()
