@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
     private void HandleGameLost()
     {
         Debug.Log("Game Lost");
-        state = State.Play;
+        state = State.Lost;
     }
 
     public bool PositionValid(Vector3 pos)
