@@ -10,7 +10,7 @@ public class ActiveTetrominoControl : MonoBehaviour
     private Transform[] childTransform;
     private GameObject[] childGameObj;
 
-    private List<Highlighter> recolored;
+    private List<IHighlightable> highlighted;
 
     private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left, Vector3.down };
 
@@ -26,7 +26,7 @@ public class ActiveTetrominoControl : MonoBehaviour
             childGameObj[i] = childTransform[i].gameObject;
         }
 
-        recolored = new List<Highlighter>();
+        highlighted = new List<IHighlightable>();
 
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
@@ -36,11 +36,11 @@ public class ActiveTetrominoControl : MonoBehaviour
     {
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
-        foreach (var obj in recolored)
+        foreach (var obj in highlighted)
         {
             if (obj != null)
             {
-                obj.SetBasicColor();
+                obj.HighlightOff();
             }
         }
     }
@@ -94,11 +94,11 @@ public class ActiveTetrominoControl : MonoBehaviour
             //    mr.material = inactiveMaterial;
             //}
 
-            foreach (var obj in recolored)
+            foreach (var obj in highlighted)
             {
-                obj.SetBasicColor();
+                obj.HighlightOff();
             }
-            recolored.Clear();
+            highlighted.Clear();
             if (StopFallEvent != null)
             {
                 StopFallEvent(childTransform);
@@ -112,11 +112,11 @@ public class ActiveTetrominoControl : MonoBehaviour
 
     private void RaycastRecolor()
     {
-        foreach (var obj in recolored)
+        foreach (var obj in highlighted)
         {
-            obj.SetBasicColor();
+            obj.HighlightOff();
         }
-        recolored.Clear();
+        highlighted.Clear();
 
         foreach (Transform t in childTransform)
         {
@@ -125,11 +125,11 @@ public class ActiveTetrominoControl : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layermask))
                 {
-                    Highlighter highlighter = hit.transform.gameObject.GetComponent<Highlighter>();
-                    if (highlighter != null)
+                    IHighlightable obj = hit.transform.gameObject.GetComponent<IHighlightable>();
+                    if (obj != null)
                     {
-                        recolored.Add(highlighter);
-                        highlighter.SetHighlight();
+                        highlighted.Add(obj);
+                        obj.HighlightOn();
                     }
                 }
             }

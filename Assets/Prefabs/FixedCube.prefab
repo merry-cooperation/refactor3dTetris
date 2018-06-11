@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33138374424059582}
   - component: {fileID: 23603039606724114}
   - component: {fileID: 65587922663276130}
-  - component: {fileID: 114655163119405110}
   - component: {fileID: 114531759503923272}
   m_Layer: 22
   m_Name: FixedCube
@@ -108,16 +107,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a869cc2f01d28bd4cb1ff29a759af9f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 0.5
---- !u!114 &114655163119405110
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1741514472401224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3784ac7a00ba34e46a0c695c424f726a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlight: {r: 0, g: 0, b: 0, a: 1}
+  fallDuration: 0.5
+  highlightMat: {fileID: 2100000, guid: 9716ed6a98d1a8d43b02418de7667cb0, type: 2}

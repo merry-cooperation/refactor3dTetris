@@ -2,17 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FixedCube : MonoBehaviour
+public class FixedCube : MonoBehaviour, IHighlightable
 {
-    public float duration = 0.5f;
+    public float fallDuration = 0.5f;
+
+    public Material highlightMat;
 
     private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left };
     private static int layerMask = 1 << 20;
 
-    private List<Highlighter> recolored;
+    private List<IHighlightable> recolored;
+    private MeshRenderer meshRenderer;
+    private Material basicMaterial;
     private void Awake()
     {
-        recolored = new List<Highlighter>();
+        meshRenderer = GetComponent<MeshRenderer>();
+        basicMaterial = meshRenderer.material;
+        recolored = new List<IHighlightable>();
     }
 
     private void Start()
@@ -26,7 +32,7 @@ public class FixedCube : MonoBehaviour
         {
             if (obj != null)
             {
-                obj.SetBasicColor();
+                obj.HighlightOff();
             }
         }
     }
@@ -37,7 +43,7 @@ public class FixedCube : MonoBehaviour
         {
             foreach (var obj in recolored)
             {
-                obj.SetBasicColor();
+                obj.HighlightOff();
             }
             recolored.Clear();
         }
@@ -47,11 +53,11 @@ public class FixedCube : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, dir, out hit, Mathf.Infinity, layerMask))
             {
-                Highlighter highlighter = hit.transform.gameObject.GetComponent<Highlighter>();
-                if (highlighter != null)
+                IHighlightable obj = hit.transform.gameObject.GetComponent<IHighlightable>();
+                if (obj != null)
                 {
-                    recolored.Add(highlighter);
-                    highlighter.SetHighlight();
+                    recolored.Add(obj);
+                    obj.HighlightOn();
                 }
             }
         }
@@ -67,13 +73,25 @@ public class FixedCube : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 endPos = new Vector3(transform.position.x, transform.position.y - 1, transform.position.z);
         float progress = 0.0f;
-        float rate = 1.0f / duration;
+        float rate = 1.0f / fallDuration;
         while (progress < 1.0f)
         {
             progress += Time.deltaTime * rate;
             transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0.0f, 1.0f, progress));
             RaycastRecolor();
             yield return null;
+        }
+    }
+
+    public void HighlightOn()
+    {
+        meshRenderer.material = highlightMat;
+    }
+    public void HighlightOff()
+    {
+        if (meshRenderer != null)
+        {
+            meshRenderer.material = basicMaterial;
         }
     }
 }
