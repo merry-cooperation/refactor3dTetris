@@ -29,7 +29,7 @@ public class ActiveTetrominoControl : MonoBehaviour
         GameManager.MoveEvent += new GameManager.MoveHandler(HandleMove);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
@@ -78,13 +78,12 @@ public class ActiveTetrominoControl : MonoBehaviour
         else
         {
             transform.position = oldPos;
-
+            gameObject.SetActive(false);
+            Destroy(gameObject);
             if (StopFallEvent != null)
             {
                 StopFallEvent(childTransform);
-            }
-
-            Destroy(gameObject);
+            }      
         }
 
     }

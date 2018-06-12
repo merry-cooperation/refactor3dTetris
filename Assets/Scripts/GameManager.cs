@@ -156,7 +156,6 @@ public class GameManager : MonoBehaviour
                     well[x, y, z].SetActive(false);
                     Destroy(well[x, y, z]);
                     well[x, y, z] = null;
-
                 }
             }
 
@@ -180,12 +179,17 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        if (RecolourEvent != null)
+        {
+            RecolourEvent();
+        }
         // slight pause
         progress -= 0.5f;
         if (LayersClearedEvent != null)
         {
             LayersClearedEvent(filledLayers);
         }
+
     }
 
     private void SpawnRandomTetromino()

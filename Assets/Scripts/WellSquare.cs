@@ -26,7 +26,6 @@ public class WellSquare : MonoBehaviour, IHighlightable
     }
     private void HandleRecolour()
     {
-        //Debug.Log("recolour");
         if (currentDepth > -1 && currentDepth < Rainbow.colors.Length)
         {
             meshRenderer.material = highlightMaterial;
