@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +24,12 @@ public class GameManager : MonoBehaviour
     public GameObject Big_cube;
     public GameObject z_shaped;
     public GameObject fixedCube;
+
+    private bool paused = false;
+    public GameObject pause_menu;
+    public Text score;
+    bool GameOver;
+    int scores;
 
     public float period;
     private float progress;
@@ -51,6 +59,9 @@ public class GameManager : MonoBehaviour
     {
         well = new GameObject[SIZEX, SIZEY, SIZEZ];
         progress = 0.0f;
+        GameOver = false;
+        scores = 0;
+        score.text = "Score: " + scores;
 
         ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
     }
@@ -74,10 +85,9 @@ public class GameManager : MonoBehaviour
     void HandleStopFall(Transform[] transforms)
     {
         foreach (Transform t in transforms)
-        {           
+        {
             well[(int)t.position.x, (int)t.position.y, (int)t.position.z] = Instantiate(fixedCube, t.position, t.rotation);
         }
-
         CheckLayers();
 
         // SpawnRandomTetromino()
@@ -93,6 +103,10 @@ public class GameManager : MonoBehaviour
             {
                 for (int x = 0; x < SIZEX && layerFilled; x++)
                 {
+                    if (well[x, 9, z] != null)
+                    {
+                        GameOver = true;
+                    }
                     if (well[x, y, z] == null)
                     {
                         layerFilled = false;
@@ -117,6 +131,8 @@ public class GameManager : MonoBehaviour
 
             }
         }
+        scores += 100;
+        score.text = "Score: " + scores;
         if (LayerClearEvent != null)
         {
             LayerClearEvent(y);
@@ -187,6 +203,27 @@ public class GameManager : MonoBehaviour
         if (MoveEvent != null)
         {
             MoveEvent(translation);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!paused)
+            {
+                Time.timeScale = 0;
+                paused = true;
+                pause_menu.SetActive(true);
+            }
+            else
+            {
+                Time.timeScale = 1;
+                paused = false;
+                pause_menu.SetActive(false);
+            }
+        }
+
+        if (GameOver)
+        {
+            SceneManager.LoadScene(0);
         }
     }
 

@@ -1683,6 +1683,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b38fb66392ed2604e99b3c47aae0f929, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  filename: Scores.txt
+  first: {fileID: 375964827}
+  second: {fileID: 707404233}
+  third: {fileID: 296047432}
+  fourth: {fileID: 2058312631}
+  fifth: {fileID: 1296971271}
+  first_s: {fileID: 1960044098}
+  second_s: {fileID: 143129149}
+  third_s: {fileID: 349116355}
+  fourth_s: {fileID: 215691740}
+  fifth_s: {fileID: 1241961936}
 --- !u!1 &2058312629
 GameObject:
   m_ObjectHideFlags: 0
