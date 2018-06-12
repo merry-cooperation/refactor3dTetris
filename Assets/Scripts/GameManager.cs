@@ -12,11 +12,14 @@ public class GameManager : MonoBehaviour
     public delegate void GameTickHandler(); //ссылка на функцию
     public static event GameTickHandler GameTickEvent;
 
+    public delegate void RecolourHandler();
+    public static event RecolourHandler RecolourEvent;
+
     public delegate void LayersClearedHandler(List<int> layers);
     public static event LayersClearedHandler LayersClearedEvent;
 
-    public delegate void MoveEventHandler(Vector3 translation, Vector3 rotation);
-    public static event MoveEventHandler MoveEvent;
+    public delegate void MoveHandler(Vector3 translation, Vector3 rotation);
+    public static event MoveHandler MoveEvent;
 
     public GameObject cubePrefab;
     public GameObject l_shaped;
@@ -104,15 +107,15 @@ public class GameManager : MonoBehaviour
                 }
                 return;
             }
-            Debug.Log("HandleStopFall: x = " + t.position.x + " y = " + t.position.y + " z = " + t.position.z);
-            Debug.Log("HandleStopFall: cube at x = " + x + " y = " + y + " z = " + z);
+            //Debug.Log("HandleStopFall: x = " + t.position.x + " y = " + t.position.y + " z = " + t.position.z);
+            //Debug.Log("HandleStopFall: cube at x = " + x + " y = " + y + " z = " + z);
             well[x, y, z] = Instantiate(fixedCube, t.position, Quaternion.identity);
         }
 
         CheckLayers();
-
-        SpawnRandomTetromino();
-        //Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
+        
+        //SpawnRandomTetromino();
+        Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
     }
 
     private void CheckLayers()
@@ -227,7 +230,7 @@ public class GameManager : MonoBehaviour
                 }
         }
     }
-    // Update is called once per frame
+
     void Update()
     {
         if (progress >= period)
@@ -237,6 +240,10 @@ public class GameManager : MonoBehaviour
             if (state == State.Play && GameTickEvent != null)
             {
                 GameTickEvent();
+                if (RecolourEvent != null)
+                {
+                    RecolourEvent();
+                }
             }
         }
         else
@@ -289,6 +296,10 @@ public class GameManager : MonoBehaviour
         if ((translation != Vector3.zero || rotation != Vector3.zero) && MoveEvent != null)
         {
             MoveEvent(translation, rotation);
+            if (RecolourEvent != null)
+            {
+                RecolourEvent();
+            }
         }
     }
 }

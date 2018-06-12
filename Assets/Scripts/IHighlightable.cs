@@ -1,5 +1,5 @@
 ﻿public interface IHighlightable
 {
-    void HighlightOn();
-    void HighlightOff();
+    void HighlightOn(int depth);
+    //void HighlightOff();
 }

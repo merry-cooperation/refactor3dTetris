@@ -10,11 +10,10 @@ public class ActiveTetrominoControl : MonoBehaviour
     private Transform[] childTransform;
     private GameObject[] childGameObj;
 
-    private List<IHighlightable> highlighted;
-
     private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left, Vector3.down };
 
-    private static int layermask = 1 << 20 | 1 << 22;
+    private static int layerFixedCube = 1 << 22;
+    private static int layerWell = 1 << 20;
     private void Awake()
     {
         int n = transform.childCount;
@@ -26,23 +25,14 @@ public class ActiveTetrominoControl : MonoBehaviour
             childGameObj[i] = childTransform[i].gameObject;
         }
 
-        highlighted = new List<IHighlightable>();
-
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
-        GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
+        GameManager.MoveEvent += new GameManager.MoveHandler(HandleMove);
     }
 
     private void OnDestroy()
     {
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
-        foreach (var obj in highlighted)
-        {
-            if (obj != null)
-            {
-                obj.HighlightOff();
-            }
-        }
     }
 
     private void HandleMove(Vector3 translation, Vector3 rotation)
@@ -59,7 +49,7 @@ public class ActiveTetrominoControl : MonoBehaviour
             {
                 transform.position = oldPos;
                 transform.rotation = oldRot;
-                return;
+                break;
             }
         }
         RaycastRecolor();
@@ -67,6 +57,7 @@ public class ActiveTetrominoControl : MonoBehaviour
 
     void HandleGameTick()
     {
+        //Debug.Log("Game tick");
         Vector3 oldPos = transform.position;
         transform.Translate(0, -1, 0, Space.World);
 
@@ -88,22 +79,10 @@ public class ActiveTetrominoControl : MonoBehaviour
         {
             transform.position = oldPos;
 
-            //foreach (var child in childGameObj)
-            //{
-            //    MeshRenderer mr = child.GetComponent<MeshRenderer>();
-            //    mr.material = inactiveMaterial;
-            //}
-
-            foreach (var obj in highlighted)
-            {
-                obj.HighlightOff();
-            }
-            highlighted.Clear();
             if (StopFallEvent != null)
             {
                 StopFallEvent(childTransform);
             }
-
 
             Destroy(gameObject);
         }
@@ -112,28 +91,40 @@ public class ActiveTetrominoControl : MonoBehaviour
 
     private void RaycastRecolor()
     {
-        foreach (var obj in highlighted)
-        {
-            obj.HighlightOff();
-        }
-        highlighted.Clear();
-
         foreach (Transform t in childTransform)
         {
             foreach (var dir in directions)
             {
                 RaycastHit hit;
-                if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layermask))
+                if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layerWell))
                 {
                     IHighlightable obj = hit.transform.gameObject.GetComponent<IHighlightable>();
                     if (obj != null)
                     {
-                        highlighted.Add(obj);
-                        obj.HighlightOn();
+                        if (dir == Vector3.down)
+                        {
+                            obj.HighlightOn(Rainbow.colors.Length - 1);
+                        }
+                        else if (dir == Vector3.forward || dir == Vector3.back)
+                        {
+                            obj.HighlightOn(Mathf.RoundToInt(t.position.z));
+                        }
+                        else
+                        {
+                            obj.HighlightOn(Mathf.RoundToInt(t.position.x));
+                        }
+                    }
+                }
+
+                if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layerFixedCube))
+                {
+                    IHighlightable obj = hit.transform.gameObject.GetComponent<IHighlightable>();
+                    if (obj != null)
+                    {
+                        obj.HighlightOn(1);
                     }
                 }
             }
-
         }
     }
 

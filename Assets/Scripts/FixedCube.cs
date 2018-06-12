@@ -9,55 +9,62 @@ public class FixedCube : MonoBehaviour, IHighlightable
     public Material highlightMat;
 
     private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left };
-    private static int layerMask = 1 << 20;
+    private static int layerWell = 1 << 20;
 
-    private List<IHighlightable> recolored;
     private MeshRenderer meshRenderer;
     private Material basicMaterial;
+    private int highlighted;
     private void Awake()
     {
+        highlighted = -1;
         meshRenderer = GetComponent<MeshRenderer>();
         basicMaterial = meshRenderer.material;
-        recolored = new List<IHighlightable>();
-    }
-
-    private void Start()
-    {
+        ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
+        GameManager.MoveEvent += new GameManager.MoveHandler(HandleMove);
+        GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
+        GameManager.RecolourEvent += new GameManager.RecolourHandler(HandleRecolour);
         RaycastRecolor();
     }
 
     private void OnDestroy()
     {
-        foreach (var obj in recolored)
-        {
-            if (obj != null)
-            {
-                obj.HighlightOff();
-            }
-        }
+        ActiveTetrominoControl.StopFallEvent -= HandleStopFall;
+        GameManager.GameTickEvent -= HandleGameTick;
+        GameManager.MoveEvent -= HandleMove;
+        GameManager.RecolourEvent -= HandleRecolour;
+    }
+
+    private void HandleGameTick()
+    {
+        RaycastRecolor();
+    }
+    private void HandleMove(Vector3 translation, Vector3 rotation)
+    {
+        RaycastRecolor();
+    }
+    private void HandleStopFall(Transform[] transforms)
+    {
+        RaycastRecolor();
     }
 
     private void RaycastRecolor()
     {
-        if (recolored.Count > 0)
-        {
-            foreach (var obj in recolored)
-            {
-                obj.HighlightOff();
-            }
-            recolored.Clear();
-        }
-
         foreach (var dir in directions)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, dir, out hit, Mathf.Infinity, layerMask))
+            if (Physics.Raycast(transform.position, dir, out hit, Mathf.Infinity, layerWell))
             {
                 IHighlightable obj = hit.transform.gameObject.GetComponent<IHighlightable>();
                 if (obj != null)
                 {
-                    recolored.Add(obj);
-                    obj.HighlightOn();
+                    if (dir == Vector3.forward || dir == Vector3.back)
+                    {
+                        obj.HighlightOn(Mathf.RoundToInt(transform.position.z));
+                    }
+                    else
+                    {
+                        obj.HighlightOn(Mathf.RoundToInt(transform.position.x));
+                    }
                 }
             }
         }
@@ -83,15 +90,21 @@ public class FixedCube : MonoBehaviour, IHighlightable
         }
     }
 
-    public void HighlightOn()
+    public void HighlightOn(int highlight)
     {
-        meshRenderer.material = highlightMat;
+        highlighted = highlight;
     }
-    public void HighlightOff()
+
+    private void HandleRecolour()
     {
-        if (meshRenderer != null)
+        if (highlighted > 0)
+        {
+            meshRenderer.material = highlightMat;
+        }
+        else
         {
             meshRenderer.material = basicMaterial;
         }
+        highlighted = -1;
     }
 }
