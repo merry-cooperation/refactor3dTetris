@@ -7,16 +7,13 @@ public class ActiveTetrominoControl : MonoBehaviour
     public delegate void StopFallHandler(Transform[] transforms);
     public static event StopFallHandler StopFallEvent;
 
-    public Material inactiveMaterial;
-
     private Transform[] childTransform;
     private GameObject[] childGameObj;
 
-    private List<Highlighter> recolored;
-
     private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left, Vector3.down };
 
-    private static int layermask = 1 << 20 | 1 << 22;
+    private static int layerFixedCube = 1 << 22;
+    private static int layerWell = 1 << 20;
     private void Awake()
     {
         int n = transform.childCount;
@@ -28,27 +25,31 @@ public class ActiveTetrominoControl : MonoBehaviour
             childGameObj[i] = childTransform[i].gameObject;
         }
 
-        recolored = new List<Highlighter>();
-        
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
-        GameManager.MoveEvent += new GameManager.MoveEventHandler(HandleMove);
+        GameManager.MoveEvent += new GameManager.MoveHandler(HandleMove);
     }
-    private void OnDestroy()
+
+    private void OnDisable()
     {
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
-        
     }
-    private void HandleMove(Vector3 translation)
+
+    private void HandleMove(Vector3 translation, Vector3 rotation)
     {
         Vector3 oldPos = transform.position;
-        transform.Translate(translation);
+        Quaternion oldRot = transform.rotation;
+
+        transform.Translate(translation, Space.World);
+        transform.Rotate(rotation, Space.World);
+
         foreach (Transform tetrominoPart in childTransform)
         {
             if (!GameManager.instance.PositionValid(tetrominoPart.position))
             {
                 transform.position = oldPos;
-                return;
+                transform.rotation = oldRot;
+                break;
             }
         }
         RaycastRecolor();
@@ -56,8 +57,9 @@ public class ActiveTetrominoControl : MonoBehaviour
 
     void HandleGameTick()
     {
+        //Debug.Log("Game tick");
         Vector3 oldPos = transform.position;
-        transform.Translate(0, -1, 0);
+        transform.Translate(0, -1, 0, Space.World);
 
         bool posValid = true;
         foreach (Transform piecePart in childTransform)
@@ -76,53 +78,52 @@ public class ActiveTetrominoControl : MonoBehaviour
         else
         {
             transform.position = oldPos;
-
-            //foreach (var child in childGameObj)
-            //{
-            //    MeshRenderer mr = child.GetComponent<MeshRenderer>();
-            //    mr.material = inactiveMaterial;
-            //}
-
-            foreach (var obj in recolored)
-            {
-                obj.SetBasicColor();
-            }
-            recolored.Clear();
+            gameObject.SetActive(false);
+            Destroy(gameObject);
             if (StopFallEvent != null)
             {
                 StopFallEvent(childTransform);
-            }
-
-            
-            Destroy(gameObject);
+            }      
         }
 
     }
 
     private void RaycastRecolor()
     {
-        foreach (var obj in recolored)
-        {
-            obj.SetBasicColor();
-        }
-        recolored.Clear();
-
         foreach (Transform t in childTransform)
         {
-            foreach(var dir in directions)
+            foreach (var dir in directions)
             {
                 RaycastHit hit;
-                if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layermask))
+                if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layerWell))
                 {
-                    Highlighter highlighter = hit.transform.gameObject.GetComponent<Highlighter>();
-                    if (highlighter != null)
+                    IHighlightable obj = hit.transform.gameObject.GetComponent<IHighlightable>();
+                    if (obj != null)
                     {
-                        recolored.Add(highlighter);
-                        highlighter.SetHighlight();
+                        if (dir == Vector3.down)
+                        {
+                            obj.HighlightOn(Rainbow.colors.Length - 1);
+                        }
+                        else if (dir == Vector3.forward || dir == Vector3.back)
+                        {
+                            obj.HighlightOn(Mathf.RoundToInt(t.position.z));
+                        }
+                        else
+                        {
+                            obj.HighlightOn(Mathf.RoundToInt(t.position.x));
+                        }
+                    }
+                }
+
+                if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layerFixedCube))
+                {
+                    IHighlightable obj = hit.transform.gameObject.GetComponent<IHighlightable>();
+                    if (obj != null)
+                    {
+                        obj.HighlightOn(1);
                     }
                 }
             }
-
         }
     }
 
