@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,10 +29,15 @@ public class GameManager : MonoBehaviour
     public GameObject z_shaped;
     public GameObject fixedCube;
 
+    public GameObject right_screw;
+    public GameObject left_screw;
+    public GameObject branch;
+
+
     private bool paused = false;
+    private int[] points = new int[4];
     public GameObject pause_menu;
     public Text score;
-    bool GameOver;
     int scores;
 
     public float period;
@@ -66,6 +70,10 @@ public class GameManager : MonoBehaviour
     {
         well = new GameObject[SIZEX, FULLY, SIZEZ];
         progress = 0.0f;
+        points[0] = 100;
+        points[1] = 300;
+        points[2] = 500;
+        points[3] = 2000;
         scores = 0;
         score.text = "Score " + scores;
 
@@ -122,9 +130,9 @@ public class GameManager : MonoBehaviour
         }
 
         CheckLayers();
-        
-        //SpawnRandomTetromino();
-        Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
+
+        SpawnRandomTetromino();
+        //Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
     }
 
     private void CheckLayers()
@@ -151,6 +159,8 @@ public class GameManager : MonoBehaviour
         }
         if (filledLayers.Count > 0)
         {
+            scores += points[filledLayers.Count - 1];
+            score.text = "Score " + scores;
             ClearLayers(filledLayers);
         }
     }
@@ -204,7 +214,7 @@ public class GameManager : MonoBehaviour
     private void SpawnRandomTetromino()
     {
         int x, z;
-        switch (Random.Range(0, 5))
+        switch (Random.Range(0, 8))
         {
             case 0:
                 {
@@ -239,6 +249,27 @@ public class GameManager : MonoBehaviour
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 5);
                     Instantiate(z_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    break;
+                }
+            case 5:
+                {
+                    x = Random.Range(0, 3);
+                    z = Random.Range(0, 3);
+                    Instantiate(right_screw, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    break;
+                }
+            case 6:
+                {
+                    x = Random.Range(0, 3);
+                    z = Random.Range(0, 3);
+                    Instantiate(left_screw, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    break;
+                }
+            case 7:
+                {
+                    x = Random.Range(0, 3);
+                    z = Random.Range(0, 3);
+                    Instantiate(branch, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
         }
