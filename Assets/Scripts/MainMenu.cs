@@ -5,31 +5,11 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-
-    //public class PlayerInfo
-    //{
-    //    public string Name;
-    //    public int Score;
-
-    //    public void SetFromCsv(string csvStr)
-    //    {
-    //        string[] fields = csvStr.Split(';');
-    //        Name = fields[0];
-    //        Score = int.Parse(fields[1]);
-    //    }
-
-    //    public string GetCsvString()
-    //    {
-    //        return string.Format("{0};{1}", Name, Score);
-    //    }
-    //}
-    //private const int n = 5;
-    //List<PlayerInfo> recordTable = new List<PlayerInfo>(n);
     public string filename = "Scores.txt";
-    string[] a = new string[10];
+    string[] table = new string[10];
     GameObject scores;
     GameObject menu;
-    //private Text text;
+    GameObject pause_menu;
     public Text first;
     public Text second;
     public Text third;
@@ -42,25 +22,49 @@ public class MainMenu : MonoBehaviour
     public Text fourth_s;
     public Text fifth_s;
 
-
     private void Awake()
     {
-        scores = transform.GetChild(0).gameObject;
+        scores = transform.GetChild(2).gameObject;
         menu = transform.GetChild(1).gameObject;
+        pause_menu = transform.GetChild(0).gameObject;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && scores.activeSelf == true)
         {
             scores.SetActive(false);
             menu.SetActive(true);
         }
     }
 
+
+    //void OnGUI()
+    //{
+    //    playerName = GUI.TextField(new Rect(100, 100, 100, 20), playerName);
+    //    if (Input.GetKeyDown(KeyCode.Q))
+    //        return;
+    //}
+
+    //void OnGUI()
+    //{
+    //    SceneManager.LoadScene(0);
+    //    playerName = GUI.TextField(new Rect(100, 100, 100, 20), playerName);
+    //    //OnDestroy();
+    //}
+
+    //private void OnDestroy()
+    //{
+    //    GameManager.GameLostEvent -= HandleGameLost;
+    //}
+
     public void StartGame()
     {
+        scores.SetActive(false);
+        menu.SetActive(false);
+        pause_menu.SetActive(false);
         SceneManager.LoadScene(1);
+        Time.timeScale = 1;
     }
 
     public void Quite()
@@ -71,34 +75,34 @@ public class MainMenu : MonoBehaviour
     public void HightScores()
     {
         menu.SetActive(false);
+        pause_menu.SetActive(false);
         scores.SetActive(true);
 
-        a = File.ReadAllLines(filename);
+        table = File.ReadAllLines(filename);
         StreamWriter sw = new StreamWriter(filename);
 
+        first.text = "" + table[0];
+        second.text = "" + table[1];
+        third.text = "" + table[2];
+        fourth.text = "" + table[3];
+        fifth.text = "" + table[4];
 
-        first.text = "" + a[0];
-        second.text = "" + a[1];
-        third.text = "" + a[2];
-        fourth.text = "" + a[3];
-        fifth.text = "" + a[4];
+        first_s.text = "" + table[5];
+        second_s.text = "" + table[6];
+        third_s.text = "" + table[7];
+        fourth_s.text = "" + table[8];
+        fifth_s.text = "" + table[9];
 
-        first_s.text = "" + a[5];
-        second_s.text = "" + a[6];
-        third_s.text = "" + a[7];
-        fourth_s.text = "" + a[8];
-        fifth_s.text = "" + a[9];
-
-        sw.WriteLine(a[0]);
-        sw.WriteLine(a[1]);
-        sw.WriteLine(a[2]);
-        sw.WriteLine(a[3]);
-        sw.WriteLine(a[4]);
-        sw.WriteLine(a[5]);
-        sw.WriteLine(a[6]);
-        sw.WriteLine(a[7]);
-        sw.WriteLine(a[8]);
-        sw.WriteLine(a[9]);
+        sw.WriteLine(table[0]);
+        sw.WriteLine(table[1]);
+        sw.WriteLine(table[2]);
+        sw.WriteLine(table[3]);
+        sw.WriteLine(table[4]);
+        sw.WriteLine(table[5]);
+        sw.WriteLine(table[6]);
+        sw.WriteLine(table[7]);
+        sw.WriteLine(table[8]);
+        sw.WriteLine(table[9]);
         sw.Close();
 
 

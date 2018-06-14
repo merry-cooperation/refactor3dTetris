@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -28,17 +29,18 @@ public class GameManager : MonoBehaviour
     public GameObject Big_cube;
     public GameObject z_shaped;
     public GameObject fixedCube;
-
     public GameObject right_screw;
     public GameObject left_screw;
     public GameObject branch;
 
 
-    private bool paused = false;
     private int[] points = new int[4];
     public GameObject pause_menu;
+    public GameObject main_menu;
     public Text score;
-    int scores;
+    public static int score_palyer;
+
+
 
     public float period;
     private float progress;
@@ -55,6 +57,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+
         if (instance == null)
         {
             instance = this;
@@ -74,8 +77,8 @@ public class GameManager : MonoBehaviour
         points[1] = 300;
         points[2] = 500;
         points[3] = 2000;
-        scores = 0;
-        score.text = "Score " + scores;
+        score_palyer = 0;
+        score.text = "Score " + score_palyer;
 
         ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
         GameLostEvent += new GameLostHandler(HandleGameLost);
@@ -131,8 +134,9 @@ public class GameManager : MonoBehaviour
 
         CheckLayers();
 
-        SpawnRandomTetromino();
-        //Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
+        //SpawnRandomTetromino();
+        // Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
+        Instantiate(straight, new Vector3(0, FULLY - 2, 0), Quaternion.identity);
     }
 
     private void CheckLayers()
@@ -159,8 +163,8 @@ public class GameManager : MonoBehaviour
         }
         if (filledLayers.Count > 0)
         {
-            scores += points[filledLayers.Count - 1];
-            score.text = "Score " + scores;
+            score_palyer += points[filledLayers.Count - 1];
+            score.text = "Score " + score_palyer;
             ClearLayers(filledLayers);
         }
     }
@@ -302,16 +306,14 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!paused)
+            if (state == State.Play)
             {
-                Time.timeScale = 0;
-                paused = true;
+                state = State.Pause;
                 pause_menu.SetActive(true);
             }
-            else
+            else if (state == State.Pause && main_menu.activeSelf == false)
             {
-                Time.timeScale = 1;
-                paused = false;
+                state = State.Play;
                 pause_menu.SetActive(false);
             }
         }
@@ -324,7 +326,6 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
             translation.z = 1;
-
         }
         else if (Input.GetKeyDown(KeyCode.W))
         {

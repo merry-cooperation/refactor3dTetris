@@ -3,10 +3,22 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
+    GameObject scores;
+    GameObject menu;
+    GameObject pause_menu;
+
+    private void Awake()
+    {
+        scores = transform.GetChild(2).gameObject;
+        menu = transform.GetChild(1).gameObject;
+        pause_menu = transform.GetChild(0).gameObject;
+    }
+
     public void Menu()
     {
-        Time.timeScale = 1;
-        SceneManager.LoadScene(0);
+        scores.SetActive(false);
+        pause_menu.SetActive(false);
+        menu.SetActive(true);
     }
 
     public void Quite()
