@@ -41,8 +41,8 @@ public class GameManager : MonoBehaviour
     public static int score_palyer;
 
 
-
-    public float period;
+    public float basicPeriod;
+    private float period;
     private float progress;
 
     private enum State { Play, Pause, Lost };
@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviour
     {
         well = new GameObject[SIZEX, FULLY, SIZEZ];
         progress = 0.0f;
+        period = basicPeriod;
         points[0] = 100;
         points[1] = 300;
         points[2] = 500;
@@ -99,9 +100,9 @@ public class GameManager : MonoBehaviour
 
     public bool PositionValid(Vector3 pos)
     {
-        int x = (int)pos.x;
-        int y = (int)pos.y;
-        int z = (int)pos.z;
+        int x = Mathf.RoundToInt(pos.x);
+        int y = Mathf.RoundToInt(pos.y);
+        int z = Mathf.RoundToInt(pos.z);
         if (x >= 0 && x < SIZEX && y >= 0 && y < FULLY && z >= 0 && z < SIZEZ &&
             well[x, y, z] == null)
         {
@@ -287,6 +288,7 @@ public class GameManager : MonoBehaviour
 
             if (state == State.Play && GameTickEvent != null)
             {
+               // Debug.Log("Game Tick");
                 GameTickEvent();
                 if (RecolourEvent != null)
                 {
@@ -354,8 +356,18 @@ public class GameManager : MonoBehaviour
             rotation.z = 90;
         }
 
+        if (Input.GetKey(KeyCode.Space))
+        {
+            period = basicPeriod / 5;
+        }
+        else
+        {
+            period = basicPeriod;
+        }
+
         if ((translation != Vector3.zero || rotation != Vector3.zero) && MoveEvent != null)
         {
+            //Debug.Log("MoveEvent");
             MoveEvent(translation, rotation);
             if (RecolourEvent != null)
             {

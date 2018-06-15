@@ -122,7 +122,7 @@ public class MainMenu : MonoBehaviour
             scores.SetActive(false);
             menu.SetActive(true);
         }
-        if (Input.GetKeyDown(KeyCode.KeypadEnter) && name_request.activeSelf == true)
+        if (Input.GetKeyDown(KeyCode.Return) && name_request.activeSelf == true)
         {
             add_score();
             update_score();
