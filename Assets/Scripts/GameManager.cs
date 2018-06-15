@@ -19,8 +19,11 @@ public class GameManager : MonoBehaviour
     public delegate void LayersClearedHandler(List<int> layers);
     public static event LayersClearedHandler LayersClearedEvent;
 
-    public delegate void MoveHandler(Vector3 translation, Vector3 rotation);
+    public delegate void MoveHandler(Vector3 translation);
     public static event MoveHandler MoveEvent;
+
+    public delegate void RotationHandler(Vector3 rotation);
+    public static event RotationHandler RotationEvent;
 
     public GameObject cubePrefab;
     public GameObject l_shaped;
@@ -377,10 +380,20 @@ public class GameManager : MonoBehaviour
             period = basicPeriod;
         }
 
-        if ((translation != Vector3.zero || rotation != Vector3.zero) && MoveEvent != null)
+        if (translation != Vector3.zero && MoveEvent != null)
         {
             //Debug.Log("MoveEvent");
-            MoveEvent(translation, rotation);
+            MoveEvent(translation);
+            if (RecolourEvent != null)
+            {
+                RecolourEvent();
+            }
+        }
+
+        if (rotation != Vector3.zero && RotationEvent != null)
+        {
+            //Debug.Log("RotationEvent");
+            RotationEvent(rotation);
             if (RecolourEvent != null)
             {
                 RecolourEvent();

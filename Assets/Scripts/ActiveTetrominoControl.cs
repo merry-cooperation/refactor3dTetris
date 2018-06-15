@@ -10,7 +10,8 @@ public class ActiveTetrominoControl : MonoBehaviour
     private Transform[] childTransform;
     private GameObject[] childGameObj;
 
-    private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left, Vector3.down };
+    private static Vector3[] raycastDirections = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left, Vector3.down };
+    private static Vector3[] rotationFixDirections = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left, Vector3.up };
 
     private static int layerFixedCube = 1 << 22;
     private static int layerWell = 1 << 20;
@@ -27,35 +28,91 @@ public class ActiveTetrominoControl : MonoBehaviour
 
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.MoveEvent += new GameManager.MoveHandler(HandleMove);
+        GameManager.RotationEvent += new GameManager.RotationHandler(HandleRotate);
     }
 
     private void OnDisable()
     {
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
+        GameManager.RotationEvent -= HandleRotate;
     }
 
-    private void HandleMove(Vector3 translation, Vector3 rotation)
+    private void HandleMove(Vector3 translation)
     {
         Vector3 oldPos = transform.position;
-        Quaternion oldRot = transform.rotation;
 
         transform.Translate(translation, Space.World);
+
+        if (!PosIsValid())
+        {
+            transform.position = oldPos;
+        }
+
+        RaycastRecolor();
+    }
+
+    private void HandleRotate(Vector3 rotation)
+    {
+        Quaternion oldRot = transform.rotation;
         transform.Rotate(rotation, Space.World);
+        
+        int countInvalidPos = 0;
 
         foreach (Transform tetrominoPart in childTransform)
         {
             if (!GameManager.instance.PositionValid(tetrominoPart.position))
             {
-                transform.position = oldPos;
+                countInvalidPos++;
+            }
+            if (countInvalidPos > 1)
+            {
                 transform.rotation = oldRot;
                 break;
             }
         }
+
+        if (countInvalidPos == 1)
+        {
+            // if only one cube in a figure went outside bounds, try to fix position
+            Vector3 oldPos = transform.position;
+            bool rotationSuccessful = false;
+            foreach (Vector3 direction in rotationFixDirections)
+            {
+                transform.Translate(direction, Space.World);
+                if (PosIsValid())
+                {
+                    rotationSuccessful = true;
+                    break;
+                }
+                else
+                {
+                    transform.position = oldPos;
+                }
+            }
+            if (!rotationSuccessful)
+            {
+                transform.rotation = oldRot;
+            }
+        }
+
         RaycastRecolor();
     }
 
-    void HandleGameTick()
+    private bool PosIsValid()
+    {
+        foreach (Transform tetrominoPart in childTransform)
+        {
+            if (!GameManager.instance.PositionValid(tetrominoPart.position))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private void HandleGameTick()
     {
         //Debug.Log("Game tick");
         Vector3 oldPos = transform.position;
@@ -83,7 +140,7 @@ public class ActiveTetrominoControl : MonoBehaviour
             if (StopFallEvent != null)
             {
                 StopFallEvent(childTransform);
-            }      
+            }
         }
 
     }
@@ -92,7 +149,7 @@ public class ActiveTetrominoControl : MonoBehaviour
     {
         foreach (Transform t in childTransform)
         {
-            foreach (var dir in directions)
+            foreach (var dir in raycastDirections)
             {
                 RaycastHit hit;
                 if (Physics.Raycast(t.position, dir, out hit, Mathf.Infinity, layerWell))

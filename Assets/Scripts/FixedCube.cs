@@ -21,6 +21,7 @@ public class FixedCube : MonoBehaviour, IHighlightable
         basicMaterial = meshRenderer.material;
         //ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
         GameManager.MoveEvent += new GameManager.MoveHandler(HandleMove);
+        GameManager.RotationEvent += new GameManager.RotationHandler(HandleRotation);
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.RecolourEvent += new GameManager.RecolourHandler(HandleRecolour);
         RaycastRecolor();
@@ -32,14 +33,20 @@ public class FixedCube : MonoBehaviour, IHighlightable
         //ActiveTetrominoControl.StopFallEvent -= HandleStopFall;
         GameManager.GameTickEvent -= HandleGameTick;
         GameManager.MoveEvent -= HandleMove;
+        GameManager.RotationEvent -= HandleRotation;
         GameManager.RecolourEvent -= HandleRecolour;
+
     }
 
     private void HandleGameTick()
     {
         RaycastRecolor();
     }
-    private void HandleMove(Vector3 translation, Vector3 rotation)
+    private void HandleMove(Vector3 translation)
+    {
+        RaycastRecolor();
+    }
+    private void HandleRotation(Vector3 rotation)
     {
         RaycastRecolor();
     }
@@ -86,7 +93,7 @@ public class FixedCube : MonoBehaviour, IHighlightable
         {
             progress += Time.deltaTime * rate;
             transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0.0f, 1.0f, progress));
-            
+
             yield return null;
         }
         RaycastRecolor();
