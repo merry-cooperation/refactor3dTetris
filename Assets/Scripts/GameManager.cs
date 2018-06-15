@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleGameLost()
     {
-        Debug.Log("Game Lost");
+        //Debug.Log("Game Lost");
         state = State.Lost;
     }
 
