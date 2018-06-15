@@ -195,16 +195,7 @@ public class GameManager : MonoBehaviour
                 {
                     for (int z = 0; z < SIZEZ; z++)
                     {
-                        well[x, layer, z] = well[x, layer + 1, z];
-                        if (well[x, layer, z] != null)
-                        {
-                            FixedCube cube = well[x, layer, z].GetComponent<FixedCube>();
-                            if (cube != null)
-                            {
-                                cube.FallDown();
-                            }
-                        }
-
+                        well[x, layer, z] = well[x, layer + 1, z];                   
                     }
                 }
             }
@@ -231,56 +222,56 @@ public class GameManager : MonoBehaviour
                 {
                     x = Random.Range(0, 4);
                     z = Random.Range(0, 4);
-                    Instantiate(Big_cube, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(Big_cube, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 1:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 5);
-                    Instantiate(t_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(t_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 2:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 5);
-                    Instantiate(l_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(l_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 3:
                 {
                     x = Random.Range(0, 2);
                     z = Random.Range(0, 5);
-                    Instantiate(straight, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(straight, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 4:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 5);
-                    Instantiate(z_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(z_shaped, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 5:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 3);
-                    Instantiate(right_screw, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(right_screw, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 6:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 3);
-                    Instantiate(left_screw, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(left_screw, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
             case 7:
                 {
                     x = Random.Range(0, 3);
                     z = Random.Range(0, 3);
-                    Instantiate(branch, new Vector3(x, FULLY - 2, z), Quaternion.identity);
+                    activeTetracube = Instantiate(branch, new Vector3(x, FULLY - 2, z), Quaternion.identity);
                     break;
                 }
         }
@@ -288,8 +279,8 @@ public class GameManager : MonoBehaviour
     private void NextTetracube()
     {
         //SpawnRandomTetromino();
-        // Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
-        activeTetracube = Instantiate(straight, new Vector3(0, FULLY - 2, 0), Quaternion.identity);
+        //activeTetracube = Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
+        activeTetracube = Instantiate(straight, new Vector3(0, FULLY - 3, 0), Quaternion.Euler(0, 0, 0));
     }
     void Update()
     {

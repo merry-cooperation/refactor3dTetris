@@ -23,6 +23,7 @@ public class FixedCube : MonoBehaviour, IHighlightable
         GameManager.RotationEvent += new GameManager.RotationHandler(HandleRotation);
         GameManager.GameTickEvent += new GameManager.GameTickHandler(HandleGameTick);
         GameManager.RecolourEvent += new GameManager.RecolourHandler(HandleRecolour);
+        GameManager.LayersClearedEvent += new GameManager.LayersClearedHandler(HandleLayersCleared);
         RaycastRecolor();
     }
 
@@ -34,6 +35,7 @@ public class FixedCube : MonoBehaviour, IHighlightable
         GameManager.MoveEvent -= HandleMove;
         GameManager.RotationEvent -= HandleRotation;
         GameManager.RecolourEvent -= HandleRecolour;
+        GameManager.LayersClearedEvent -= HandleLayersCleared;
 
     }
 
@@ -52,6 +54,23 @@ public class FixedCube : MonoBehaviour, IHighlightable
     private void HandleStopFall(Transform[] transforms)
     {
         RaycastRecolor();
+    }
+
+    private void HandleLayersCleared(List<int> layers)
+    {
+        int y = (int)transform.position.y;
+        int fallDiff = 0;
+        foreach(int layer in layers)
+        {
+            if (y > layer)
+            {
+                fallDiff++;
+            }
+        }
+        if (fallDiff > 0)
+        {
+            StartCoroutine(FallAnim(fallDiff));
+        }
     }
 
     private void RaycastRecolor()
@@ -77,15 +96,10 @@ public class FixedCube : MonoBehaviour, IHighlightable
         }
     }
 
-    public void FallDown()
-    {
-        StartCoroutine(FallAnim());
-    }
-
-    private IEnumerator FallAnim()
+    private IEnumerator FallAnim(int fallDiff)
     {
         Vector3 startPos = transform.position;
-        Vector3 endPos = new Vector3(transform.position.x, transform.position.y - 1, transform.position.z);
+        Vector3 endPos = new Vector3(transform.position.x, transform.position.y - fallDiff, transform.position.z);
         float progress = 0.0f;
         float rate = 1.0f / fallDuration;
         while (progress < 1.0f)
