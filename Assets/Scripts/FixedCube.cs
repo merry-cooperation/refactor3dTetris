@@ -5,7 +5,6 @@ using UnityEngine;
 public class FixedCube : MonoBehaviour, IHighlightable
 {
     public float fallDuration = 0.5f;
-
     public Material highlightMat;
 
     private static Vector3[] directions = { Vector3.back, Vector3.forward, Vector3.right, Vector3.left };

@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     public Text score;
     public static int score_palyer;
 
+    private AudioSource music;
 
     public float basicPeriod;
     private float period;
@@ -74,6 +75,8 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        music = Camera.main.GetComponent<AudioSource>();
+
         well = new GameObject[SIZEX, FULLY, SIZEZ];
         progress = 0.0f;
         period = basicPeriod;
@@ -99,6 +102,7 @@ public class GameManager : MonoBehaviour
     private void HandleGameLost()
     {
         //Debug.Log("Game Lost");
+        music.Stop();
         state = State.Lost;
     }
 
@@ -326,11 +330,13 @@ public class GameManager : MonoBehaviour
             if (state == State.Play)
             {
                 state = State.Pause;
+                music.Pause();
                 pause_menu.SetActive(true);
             }
             else if (state == State.Pause && main_menu.activeSelf == false)
             {
                 state = State.Play;
+                music.Play();
                 pause_menu.SetActive(false);
             }
         }
