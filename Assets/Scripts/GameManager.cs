@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
     private const int SIZEZ = 5;
 
     private GameObject[,,] well;
-
+    private GameObject activeTetracube;
     private void Awake()
     {
 
@@ -83,7 +83,8 @@ public class GameManager : MonoBehaviour
 
         ActiveTetrominoControl.StopFallEvent += new ActiveTetrominoControl.StopFallHandler(HandleStopFall);
         GameLostEvent += new GameLostHandler(HandleGameLost);
-
+        state = State.Play;
+        activeTetracube = null;
     }
 
     private void OnDestroy()
@@ -113,6 +114,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleStopFall(Transform[] transforms)
     {
+        activeTetracube = null;
         foreach (Transform t in transforms)
         {
 
@@ -135,9 +137,6 @@ public class GameManager : MonoBehaviour
 
         CheckLayers();
 
-        //SpawnRandomTetromino();
-        // Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
-        Instantiate(straight, new Vector3(0, FULLY - 2, 0), Quaternion.identity);
     }
 
     private void CheckLayers()
@@ -279,20 +278,33 @@ public class GameManager : MonoBehaviour
                 }
         }
     }
-
+    private void NextTetracube()
+    {
+        //SpawnRandomTetromino();
+        // Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
+        activeTetracube = Instantiate(straight, new Vector3(0, FULLY - 2, 0), Quaternion.identity);
+    }
     void Update()
     {
         if (progress >= period)
         {
             progress -= period;
 
-            if (state == State.Play && GameTickEvent != null)
+            if (state == State.Play)
             {
-               // Debug.Log("Game Tick");
-                GameTickEvent();
-                if (RecolourEvent != null)
+                if (activeTetracube == null)
                 {
-                    RecolourEvent();
+                    NextTetracube();
+                }
+                if (GameTickEvent != null)
+                {
+                    // Debug.Log("Game Tick");
+
+                    GameTickEvent();
+                    if (RecolourEvent != null)
+                    {
+                        RecolourEvent();
+                    }
                 }
             }
         }
