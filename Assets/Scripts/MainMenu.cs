@@ -33,6 +33,23 @@ public class MainMenu : MonoBehaviour
         menu = transform.GetChild(1).gameObject;
         pause_menu = transform.GetChild(0).gameObject;
         GameManager.GameLostEvent += new GameManager.GameLostHandler(Gamelost);
+        table[0] = first.text;
+        table[1] = second.text;
+        table[2] = third.text;
+        table[3] = fourth.text;
+        table[4] = fifth.text;
+
+        table[5] = first_s.text;
+        table[6] = second_s.text;
+        table[7] = third_s.text;
+        table[8] = fourth_s.text;
+        table[9] = fifth_s.text;
+        StreamWriter sw = new StreamWriter(filename);
+        for (int i = 0; i < 10; i++)
+        {
+            sw.WriteLine(table[i]);
+        }
+        sw.Close();
         update_score();
     }
 

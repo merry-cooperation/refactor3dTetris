@@ -38,8 +38,13 @@ public class GameManager : MonoBehaviour
 
 
     private int[] points = new int[4];
+    public Sprite on;
+    public Sprite off;
+    Image theImage;
     public GameObject pause_menu;
+    public GameObject soung;
     public GameObject main_menu;
+
     public Text score;
     public static int score_palyer;
 
@@ -71,6 +76,8 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         state = State.Play;
+        theImage = GameObject.Find("Music").GetComponent<Image>();
+        theImage.sprite = on;
     }
     // Use this for initialization
     void Start()
@@ -91,6 +98,7 @@ public class GameManager : MonoBehaviour
         GameLostEvent += new GameLostHandler(HandleGameLost);
         state = State.Play;
         activeTetracube = null;
+        theImage.sprite = on;
     }
 
     private void OnDestroy()
@@ -195,7 +203,7 @@ public class GameManager : MonoBehaviour
                 {
                     for (int z = 0; z < SIZEZ; z++)
                     {
-                        well[x, layer, z] = well[x, layer + 1, z];                   
+                        well[x, layer, z] = well[x, layer + 1, z];
                     }
                 }
             }
@@ -395,6 +403,20 @@ public class GameManager : MonoBehaviour
             {
                 RecolourEvent();
             }
+        }
+    }
+
+    public void OnOff()
+    {
+        if (theImage.sprite == off)
+        {
+            theImage.sprite = on;
+            music.Play();
+        }
+        else
+        {
+            theImage.sprite = off;
+            music.Pause();
         }
     }
 }
