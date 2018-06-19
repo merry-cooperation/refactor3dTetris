@@ -43,7 +43,6 @@ public class GameManager : MonoBehaviour
     Image theImage;
     public GameObject pause_menu;
     public GameObject soung;
-    public GameObject main_menu;
 
     public Text score;
     public static int score_palyer;
@@ -329,13 +328,11 @@ public class GameManager : MonoBehaviour
             if (state == State.Play)
             {
                 state = State.Pause;
-                music.Pause();
                 pause_menu.SetActive(true);
             }
-            else if (state == State.Pause && main_menu.activeSelf == false)
+            else if (state == State.Pause && pause_menu.activeSelf == true)
             {
                 state = State.Play;
-                music.Play();
                 pause_menu.SetActive(false);
             }
         }

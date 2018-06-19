@@ -3,14 +3,13 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MainMenu : MonoBehaviour
+public class GameLostScript : MonoBehaviour
 {
     public string filename = "Scores.txt";
     string[] table = new string[10];
     int[] point = new int[5];
     string player_name;
     GameObject scores;
-    GameObject menu;
     GameObject pause_menu;
     public GameObject name_request;
     public Text name_win;
@@ -28,9 +27,8 @@ public class MainMenu : MonoBehaviour
 
     private void Awake()
     {
-        name_request = transform.GetChild(4).gameObject;
-        scores = transform.GetChild(2).gameObject;
-        menu = transform.GetChild(1).gameObject;
+        name_request = transform.GetChild(3).gameObject;
+        scores = transform.GetChild(1).gameObject;
         pause_menu = transform.GetChild(0).gameObject;
         GameManager.GameLostEvent += new GameManager.GameLostHandler(Gamelost);
         update_score();
@@ -98,7 +96,6 @@ public class MainMenu : MonoBehaviour
 
     void Gamelost()
     {
-        menu.SetActive(false);
         pause_menu.SetActive(false);
         if (GameManager.score_palyer > point[4])
         {
@@ -120,7 +117,7 @@ public class MainMenu : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) && scores.activeSelf == true)
         {
             scores.SetActive(false);
-            menu.SetActive(true);
+            SceneManager.LoadScene(1);
         }
         if (Input.GetKeyDown(KeyCode.Return) && name_request.activeSelf == true)
         {
@@ -131,25 +128,14 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    public void StartGame()
-    {
-        scores.SetActive(false);
-        menu.SetActive(false);
-        pause_menu.SetActive(false);
-        SceneManager.LoadScene(0);
-        Time.timeScale = 1;
-    }
-
     public void Quite()
     {
         Application.Quit();
     }
 
-    public void HightScores()
+    public void Menu()
     {
-        menu.SetActive(false);
-        pause_menu.SetActive(false);
-        scores.SetActive(true);
-        update_score();
+        Time.timeScale = 0;
+        SceneManager.LoadScene(0);
     }
 }
