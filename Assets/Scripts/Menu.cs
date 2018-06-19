@@ -86,7 +86,6 @@ public class Menu : MonoBehaviour
     {
         scores.SetActive(false);
         SceneManager.LoadScene(1);
-        Time.timeScale = 1;
     }
 
     public void Quite()
