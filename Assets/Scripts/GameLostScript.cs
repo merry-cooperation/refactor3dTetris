@@ -27,7 +27,7 @@ public class GameLostScript : MonoBehaviour
 
     private void Awake()
     {
-        name_request = transform.GetChild(3).gameObject;
+        name_request = transform.GetChild(2).gameObject;
         scores = transform.GetChild(1).gameObject;
         pause_menu = transform.GetChild(0).gameObject;
         GameManager.GameLostEvent += new GameManager.GameLostHandler(Gamelost);
