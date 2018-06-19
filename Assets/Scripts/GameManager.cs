@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -285,9 +284,9 @@ public class GameManager : MonoBehaviour
     }
     private void NextTetracube()
     {
-        SpawnRandomTetromino();
+        //SpawnRandomTetromino();
         //activeTetracube = Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
-        //activeTetracube = Instantiate(straight, new Vector3(0, FULLY - 3, 0), Quaternion.Euler(0, 0, 0));
+        activeTetracube = Instantiate(straight, new Vector3(0, FULLY - 3, 0), Quaternion.Euler(0, 0, 0));
     }
     void Update()
     {

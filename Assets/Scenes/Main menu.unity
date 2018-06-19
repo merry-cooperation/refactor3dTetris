@@ -1419,16 +1419,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   filename: Scores.txt
-  first: {fileID: 307536570}
-  second: {fileID: 712440180}
-  third: {fileID: 805716782}
-  fourth: {fileID: 1582654904}
-  fifth: {fileID: 2109252687}
-  first_s: {fileID: 1876866703}
-  second_s: {fileID: 398405703}
-  third_s: {fileID: 1078751313}
-  fourth_s: {fileID: 1160444867}
-  fifth_s: {fileID: 1492393395}
 --- !u!114 &1871123570
 MonoBehaviour:
   m_ObjectHideFlags: 0
