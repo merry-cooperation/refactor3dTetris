@@ -117,7 +117,7 @@ public class GameLostScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) && scores.activeSelf == true)
         {
             scores.SetActive(false);
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene(0);
         }
         if (Input.GetKeyDown(KeyCode.Return) && name_request.activeSelf == true)
         {
