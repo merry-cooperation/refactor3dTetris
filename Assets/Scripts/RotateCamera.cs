@@ -2,16 +2,19 @@
 
 public class RotateCamera : MonoBehaviour
 {
-    [SerializeField] GameObject target;
 
     [Header("Speed")]
-    [SerializeField] float moveSpeed = 300f;
-    [SerializeField] float zoomSpeed = 100f;
+    [SerializeField] float sensitivity = 300f;
 
-    [Header("Zoom")]
-    [SerializeField] float minDistance = 2f;
-    [SerializeField] float maxDistance = 5f;
-
+    private float angleX;
+    private float angleY;
+    private Transform pivot;
+    private Vector3 pivotEulers;
+    private void Awake()
+    {
+        pivot = transform.GetChild(0);
+        pivotEulers = pivot.rotation.eulerAngles;
+    }
     void Update()
     {
         CameraControl();
@@ -21,29 +24,21 @@ public class RotateCamera : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-            /* Rotate the camera using the input managers mouse axis */
-            transform.RotateAround(target.transform.position, Vector3.up, ((Input.GetAxisRaw("Mouse X") * Time.deltaTime) * moveSpeed));
-            transform.RotateAround(target.transform.position, transform.right, -((Input.GetAxisRaw("Mouse Y") * Time.deltaTime) * moveSpeed));
+
+            float deltaRotX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensitivity;
+            float deltaRotY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensitivity;
+
+            angleX += deltaRotX;
+            angleY -= deltaRotY;
+
+            angleX = Mathf.Clamp(angleX, -45, 45);
+            angleY = Mathf.Clamp(angleY, -45, 45);
+
+            transform.localRotation = Quaternion.Euler(0, angleX, 0);
+            pivot.localRotation = Quaternion.Euler(angleY, pivotEulers.y, pivotEulers.z);
+
+           
         }
-
-        /* Zoom the camera */
-        //ZoomCamera();
     }
 
-    void ZoomCamera()
-    {
-        /* If we are already close enough for the min distance and we try to zoom in, dont, return instead */
-        /* Similarly for zooming out */
-        if (Vector3.Distance(transform.position, target.transform.position) <= minDistance && Input.GetAxis("Mouse ScrollWheel") > 0f) { return; }
-        if (Vector3.Distance(transform.position, target.transform.position) >= maxDistance && Input.GetAxis("Mouse ScrollWheel") < 0f) { return; }
-
-        /* Only move in the Z relative to the Camera (so forward and back) */
-        transform.Translate(
-            0f,
-            0f,
-            (Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime) * zoomSpeed,
-            Space.Self
-        );
-    }
 }
-
