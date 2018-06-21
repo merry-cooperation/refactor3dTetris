@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
         }
         state = State.Play;
         theImage = GameObject.Find("Music").GetComponent<Image>();
-        theImage.sprite = on;
+        //theImage.sprite = on;
     }
     // Use this for initialization
     void Start()
@@ -96,7 +96,6 @@ public class GameManager : MonoBehaviour
         GameLostEvent += new GameLostHandler(HandleGameLost);
         state = State.Play;
         activeTetracube = null;
-        theImage.sprite = on;
     }
 
     private void OnDestroy()
@@ -146,6 +145,7 @@ public class GameManager : MonoBehaviour
             //Debug.Log("HandleStopFall: x = " + t.position.x + " y = " + t.position.y + " z = " + t.position.z);
             //Debug.Log("HandleStopFall: cube at x = " + x + " y = " + y + " z = " + z);
             well[x, y, z] = Instantiate(fixedCube, t.position, Quaternion.identity);
+            well[x, y, z].GetComponent<MeshRenderer>().material.color = Rainbow.colors[y % Rainbow.colors.Length];
         }
 
         CheckLayers();
@@ -284,9 +284,9 @@ public class GameManager : MonoBehaviour
     }
     private void NextTetracube()
     {
-        //SpawnRandomTetromino();
+        SpawnRandomTetromino();
         //activeTetracube = Instantiate(cubePrefab, new Vector3(1, FULLY - 2, 1), Quaternion.identity);
-        activeTetracube = Instantiate(straight, new Vector3(0, FULLY - 3, 0), Quaternion.Euler(0, 0, 0));
+        //activeTetracube = Instantiate(straight, new Vector3(0, FULLY - 3, 0), Quaternion.Euler(0, 0, 0));
     }
     void Update()
     {
@@ -339,6 +339,8 @@ public class GameManager : MonoBehaviour
 
     private void GetInput()
     {
+        
+        
         Vector3 translation = Vector3.zero;
         Vector3 rotation = Vector3.zero;
         if (Input.GetKeyDown(KeyCode.S))
@@ -358,6 +360,13 @@ public class GameManager : MonoBehaviour
         {
             translation.x = -1;
         }
+
+        Vector3 camAngle = Camera.main.transform.rotation.eulerAngles;
+        if (camAngle.y > 225.0f)
+        {
+            translation = new Vector3(translation.z, 0, -translation.x);
+        }
+
 
         if (Input.GetKeyDown(KeyCode.R))
         {
