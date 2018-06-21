@@ -10,6 +10,9 @@
 		Tags { "RenderType"="Opaque" }
 		LOD 100
 
+		Lighting Off
+		// Cull Off
+
 		Pass
 		{
 			CGPROGRAM
@@ -17,6 +20,7 @@
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
+
 
 			struct appdata
 			{
