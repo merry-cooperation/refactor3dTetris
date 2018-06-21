@@ -60,7 +60,7 @@ public class FixedCube : MonoBehaviour, IHighlightable
     {
         int y = (int)transform.position.y;
         int fallDiff = 0;
-        foreach(int layer in layers)
+        foreach (int layer in layers)
         {
             if (y > layer)
             {
@@ -109,6 +109,7 @@ public class FixedCube : MonoBehaviour, IHighlightable
 
             yield return null;
         }
+        meshRenderer.material.color = Rainbow.colors[(int)transform.position.y % Rainbow.colors.Length];
         RaycastRecolor();
     }
 
