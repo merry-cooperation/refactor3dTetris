@@ -9,11 +9,13 @@ public class Menu : MonoBehaviour
     public string filename = "Scores.txt";
     GameObject scores;
     GameObject menu;
+    GameObject control;
     List<Text> names_scores = new List<Text>(10);
     string[] table = new string[10];
 
     private void Awake()
     {
+        control = transform.GetChild(2).gameObject;
         scores = transform.GetChild(1).gameObject;
         menu = transform.GetChild(0).gameObject;
         Update_score();
@@ -53,10 +55,18 @@ public class Menu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && scores.activeSelf == true)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            scores.SetActive(false);
-            menu.SetActive(true);
+            if (scores.activeSelf == true)
+            {
+                scores.SetActive(false);
+                menu.SetActive(true);
+            }
+            else if(control.activeSelf == true)
+            {
+                control.SetActive(false);
+                menu.SetActive(true);
+            }
         }
     }
 
@@ -76,5 +86,11 @@ public class Menu : MonoBehaviour
         menu.SetActive(false);
         scores.SetActive(true);
         Update_score();
+    }
+
+    public void Control()
+    {
+        menu.SetActive(false);
+        control.SetActive(true);
     }
 }
